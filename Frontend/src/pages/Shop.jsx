@@ -234,8 +234,20 @@ export const Shop = () => {
           border: '1px solid rgba(255, 255, 255, 0.1)',
           boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.1)'
         }}>
-          {/* Top Header Row matching Website Theme */}
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem', gap: '1rem', flexWrap: 'wrap' }}>
+          {/* Top Header Row with Back Button on the Right */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', gap: '1rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+              <div style={{ width: 4, height: 28, background: 'linear-gradient(to bottom, #ec4899, #6366f1)', borderRadius: 4 }} />
+              <div>
+                <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#ffffff', letterSpacing: '0.5px', lineHeight: 1.2 }}>
+                  {selectedCategory.name}
+                </h2>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                  &gt; เลือกไอเทมที่ต้องการแลกรับ
+                </p>
+              </div>
+            </div>
+
             <button
               onClick={() => setSelectedCategory(null)}
               style={{
@@ -251,25 +263,15 @@ export const Shop = () => {
                 alignItems: 'center',
                 gap: '0.5rem',
                 boxShadow: '0 4px 18px rgba(99, 102, 241, 0.4)',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                marginLeft: 'auto'
               }}
               onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
             >
               <ArrowLeft size={18} />
-              <span>ย้อนกลับ</span>
+              <span>ย้อนกลับไปเลือกหมวดหมู่</span>
             </button>
-
-            <div style={{ width: 4, height: 28, background: 'linear-gradient(to bottom, #ec4899, #6366f1)', borderRadius: 4 }} />
-
-            <div>
-              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#ffffff', letterSpacing: '0.5px', lineHeight: 1.2 }}>
-                {selectedCategory.name}
-              </h2>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                &gt; เลือกไอเทมที่ต้องการแลกรับ
-              </p>
-            </div>
           </div>
 
           {/* Items Grid Layout with Website Glass Theme */}
