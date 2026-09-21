@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { ShoppingBag, Zap, CheckCircle2, AlertCircle, ArrowLeft, Grid, Layers, Sparkles } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
