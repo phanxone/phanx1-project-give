@@ -117,7 +117,6 @@ export const Shop = () => {
           <p style={{ color: 'var(--text-muted)' }}>กำลังโหลดหมวดหมู่สินค้า...</p>
         </div>
       ) : !selectedCategory ? (
-        {/* CATEGORIES VIEW (Matching Image 2 Layout - 2 Columns Grid) */}
         <div>
           {categories.length > 0 ? (
             <div style={{
