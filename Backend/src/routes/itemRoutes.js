@@ -137,21 +137,28 @@ router.get('/orders', async (req, res) => {
 
 // POST /api/items/orders - Player Redeem/Buy Item
 router.post('/orders', async (req, res) => {
-  const { user_id, username, item_id, item_title, points_spent } = req.body
+  const { user_id, username, item_id, item_title, points_spent, quantity, note } = req.body
   if (!username || !item_title || !points_spent) {
     return res.status(400).json({ success: false, message: 'ข้อมูลคำสั่งซื้อไม่ครบถ้วน' })
   }
 
   if (!supabase) return res.status(500).json({ success: false, message: 'ไม่ได้ตั้งค่า Supabase' })
 
-  const { data, error } = await supabase.from('orders').insert([{
+  const qty = parseInt(quantity || 1, 10)
+  const displayTitle = qty > 1 ? `${item_title} (x${qty})` : item_title
+
+  const orderData = {
     user_id: user_id || null,
     username: username,
     item_id: item_id || null,
-    item_title: item_title,
+    item_title: displayTitle,
     points_spent: parseInt(points_spent, 10),
     status: 'pending'
-  }]).select()
+  }
+
+  if (note) orderData.note = note
+
+  const { data, error } = await supabase.from('orders').insert([orderData]).select()
 
   if (error) return res.status(500).json({ success: false, error: error.message })
   res.status(201).json({ success: true, message: 'ส่งคำสั่งแลกสินค้าเรียบร้อยแล้ว!', order: data[0] })
