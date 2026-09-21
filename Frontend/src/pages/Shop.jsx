@@ -224,49 +224,60 @@ export const Shop = () => {
           )}
         </div>
       ) : (
-        /* ITEMS VIEW IN SELECTED CATEGORY (Matching Image 1 Design) */
-        <div style={{ background: 'rgba(15, 17, 26, 0.85)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-          {/* Top Header Row matching Image 1 */}
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.75rem', gap: '0.85rem', flexWrap: 'wrap' }}>
+        /* ITEMS VIEW IN SELECTED CATEGORY (Matching Website Glassmorphic Theme & Pet Sim 99 Layout) */
+        <div style={{
+          background: 'rgba(15, 21, 37, 0.8)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          padding: '1.75rem',
+          borderRadius: '20px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.1)'
+        }}>
+          {/* Top Header Row matching Website Theme */}
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem', gap: '1rem', flexWrap: 'wrap' }}>
             <button
               onClick={() => setSelectedCategory(null)}
               style={{
-                background: 'linear-gradient(135deg, #f95700, #ff5722)',
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
                 color: '#ffffff',
                 border: 'none',
-                padding: '0.55rem 1.25rem',
-                borderRadius: '6px',
+                padding: '0.6rem 1.35rem',
+                borderRadius: '12px',
                 fontWeight: 700,
                 fontSize: '0.9rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
-                boxShadow: '0 4px 12px rgba(249, 87, 0, 0.35)'
+                gap: '0.5rem',
+                boxShadow: '0 4px 18px rgba(99, 102, 241, 0.4)',
+                transition: 'all 0.2s ease'
               }}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+              onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
             >
               <ArrowLeft size={18} />
-              <span>กลับ</span>
+              <span>ย้อนกลับ</span>
             </button>
 
-            <div style={{ width: 3, height: 26, background: '#f95700', borderRadius: 2 }} />
+            <div style={{ width: 4, height: 28, background: 'linear-gradient(to bottom, #ec4899, #6366f1)', borderRadius: 4 }} />
 
             <div>
-              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1.2 }}>
+              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#ffffff', letterSpacing: '0.5px', lineHeight: 1.2 }}>
                 {selectedCategory.name}
               </h2>
-              <p style={{ fontSize: '0.82rem', color: '#9ca3af', marginTop: '0.15rem' }}>
-                &gt; เลือกไอเทมที่ต้องการ
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                &gt; เลือกไอเทมที่ต้องการแลกรับ
               </p>
             </div>
           </div>
 
-          {/* Items Grid Layout matching Image 1 */}
+          {/* Items Grid Layout with Website Glass Theme */}
           {filteredItems.length > 0 ? (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))',
-              gap: '1.25rem'
+              gridTemplateColumns: 'repeat(auto-fill, minmax(215px, 1fr))',
+              gap: '1.35rem'
             }}>
               {filteredItems.map((item) => {
                 const isOutOfStock = item.stock <= 0
@@ -274,23 +285,36 @@ export const Shop = () => {
                   <div
                     key={item.id}
                     style={{
-                      background: '#181b26',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '10px',
-                      padding: '0.75rem',
+                      background: 'rgba(22, 30, 52, 0.7)',
+                      backdropFilter: 'blur(10px)',
+                      border: isOutOfStock ? '1px solid rgba(239, 68, 68, 0.2)' : '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '16px',
+                      padding: '0.85rem',
                       display: 'flex',
                       flexDirection: 'column',
-                      transition: 'transform 0.2s, border-color 0.2s'
+                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3)'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-4px)'
+                      e.currentTarget.style.borderColor = isOutOfStock ? 'rgba(239, 68, 68, 0.4)' : 'rgba(99, 102, 241, 0.5)'
+                      e.currentTarget.style.boxShadow = isOutOfStock ? '0 12px 25px rgba(239, 68, 68, 0.15)' : '0 12px 25px rgba(99, 102, 241, 0.25)'
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)'
+                      e.currentTarget.style.borderColor = isOutOfStock ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.08)'
+                      e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.3)'
                     }}
                   >
-                    {/* Square Image Box with Overlay if Out of Stock */}
+                    {/* Square Image Container */}
                     <div style={{
                       width: '100%',
                       aspectRatio: '1 / 1',
-                      borderRadius: '8px',
+                      borderRadius: '12px',
                       overflow: 'hidden',
                       position: 'relative',
-                      background: '#0c0e14',
+                      background: '#0a0d16',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center'
@@ -302,7 +326,8 @@ export const Shop = () => {
                           width: '100%',
                           height: '100%',
                           objectFit: 'cover',
-                          filter: isOutOfStock ? 'grayscale(100%) brightness(0.35)' : 'none'
+                          filter: isOutOfStock ? 'grayscale(100%) brightness(0.3)' : 'none',
+                          transition: 'transform 0.3s ease'
                         }}
                       />
 
@@ -311,16 +336,17 @@ export const Shop = () => {
                           position: 'absolute',
                           top: '50%',
                           left: '50%',
-                          transform: 'translate(-50%, -50%) rotate(-10deg)',
-                          background: 'rgba(0, 0, 0, 0.85)',
-                          border: '1px solid rgba(239, 68, 68, 0.5)',
-                          color: '#ffffff',
+                          transform: 'translate(-50%, -50%) rotate(-8deg)',
+                          background: 'rgba(15, 23, 42, 0.92)',
+                          border: '1px solid rgba(239, 68, 68, 0.6)',
+                          color: '#f87171',
                           fontWeight: 800,
-                          fontSize: '0.82rem',
-                          padding: '0.35rem 1.25rem',
-                          borderRadius: '4px',
+                          fontSize: '0.85rem',
+                          padding: '0.4rem 1.25rem',
+                          borderRadius: '8px',
                           whiteSpace: 'nowrap',
-                          boxShadow: '0 4px 15px rgba(0,0,0,0.8)'
+                          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(239, 68, 68, 0.3)',
+                          letterSpacing: '0.5px'
                         }}>
                           สินค้าหมด
                         </div>
@@ -329,50 +355,52 @@ export const Shop = () => {
 
                     {/* Item Title */}
                     <h3 style={{
-                      fontSize: '0.92rem',
+                      fontSize: '0.95rem',
                       fontWeight: 700,
                       color: '#ffffff',
                       textTransform: 'uppercase',
-                      marginTop: '0.75rem',
+                      marginTop: '0.85rem',
                       marginBottom: '0.5rem',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                      letterSpacing: '0.5px'
+                      letterSpacing: '0.3px'
                     }}>
                       {item.title}
                     </h3>
 
                     {/* Price and Stock Status Row */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto', marginBottom: '0.75rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', marginBottom: '0.85rem' }}>
                       <div>
-                        <div style={{ fontSize: '0.72rem', color: '#9ca3af' }}>ราคา</div>
-                        <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f95700', lineHeight: 1.1 }}>
-                          {item.points} <span style={{ fontSize: '0.75rem' }}>PTS</span>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>ราคา</div>
+                        <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '0.2rem', lineHeight: 1.1 }}>
+                          <span>{item.points}</span>
+                          <span style={{ fontSize: '0.72rem', color: '#fbbf24', fontWeight: 700 }}>PTS</span>
                         </div>
                       </div>
 
                       {isOutOfStock ? (
                         <span style={{
-                          background: 'rgba(239, 68, 68, 0.2)',
-                          border: '1px solid rgba(239, 68, 68, 0.5)',
+                          background: 'rgba(239, 68, 68, 0.15)',
+                          border: '1px solid rgba(239, 68, 68, 0.4)',
                           color: '#fca5a5',
                           fontWeight: 700,
                           fontSize: '0.75rem',
-                          padding: '0.2rem 0.5rem',
-                          borderRadius: '4px'
+                          padding: '0.2rem 0.65rem',
+                          borderRadius: '6px'
                         }}>
                           หมด
                         </span>
                       ) : (
                         <span style={{
-                          background: 'rgba(16, 185, 129, 0.2)',
-                          border: '1px solid rgba(16, 185, 129, 0.5)',
+                          background: 'rgba(16, 185, 129, 0.18)',
+                          border: '1px solid rgba(16, 185, 129, 0.45)',
                           color: '#34d399',
                           fontWeight: 800,
                           fontSize: '0.75rem',
-                          padding: '0.2rem 0.55rem',
-                          borderRadius: '4px'
+                          padding: '0.2rem 0.65rem',
+                          borderRadius: '6px',
+                          boxShadow: '0 0 10px rgba(16, 185, 129, 0.2)'
                         }}>
                           x{item.stock}
                         </span>
@@ -385,11 +413,11 @@ export const Shop = () => {
                         onClick={() => handleRedeem(item)}
                         disabled={buyingId === item.id}
                         style={{
-                          background: 'linear-gradient(135deg, #f95700, #ff5722)',
+                          background: 'linear-gradient(135deg, #6366f1, #ec4899)',
                           color: '#ffffff',
                           border: 'none',
-                          borderRadius: '6px',
-                          padding: '0.6rem',
+                          borderRadius: '10px',
+                          padding: '0.65rem',
                           fontWeight: 700,
                           fontSize: '0.88rem',
                           cursor: 'pointer',
@@ -397,23 +425,25 @@ export const Shop = () => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          gap: '0.4rem',
-                          boxShadow: '0 4px 12px rgba(249, 87, 0, 0.3)',
-                          transition: 'all 0.2s'
+                          gap: '0.45rem',
+                          boxShadow: '0 4px 15px rgba(99, 102, 241, 0.35)',
+                          transition: 'all 0.2s ease'
                         }}
+                        onMouseOver={(e) => e.currentTarget.style.boxShadow = '0 6px 20px rgba(236, 72, 153, 0.45)'}
+                        onMouseOut={(e) => e.currentTarget.style.boxShadow = '0 4px 15px rgba(99, 102, 241, 0.35)'}
                       >
                         <ShoppingCart size={16} />
-                        <span>{buyingId === item.id ? 'กำลังสั่งซื้อ...' : 'สั่งซื้อ'}</span>
+                        <span>{buyingId === item.id ? 'กำลังแลกสินค้า...' : 'สั่งซื้อ'}</span>
                       </button>
                     ) : (
                       <button
                         disabled
                         style={{
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
-                          color: '#6b7280',
-                          borderRadius: '6px',
-                          padding: '0.6rem',
+                          background: 'rgba(255, 255, 255, 0.04)',
+                          border: '1px solid rgba(255, 255, 255, 0.06)',
+                          color: 'var(--text-subtle)',
+                          borderRadius: '10px',
+                          padding: '0.65rem',
                           fontWeight: 600,
                           fontSize: '0.88rem',
                           cursor: 'not-allowed',
@@ -421,7 +451,7 @@ export const Shop = () => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          gap: '0.4rem'
+                          gap: '0.45rem'
                         }}
                       >
                         <ShoppingCart size={16} />
@@ -433,9 +463,9 @@ export const Shop = () => {
               })}
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '3rem 2rem' }}>
-              <ShoppingBag size={44} color="var(--primary)" style={{ marginBottom: '1rem', opacity: 0.8 }} />
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#fff', marginBottom: '0.5rem' }}>ยังไม่มีสินค้าในหมวดหมู่นี้</h2>
+            <div style={{ textAlign: 'center', padding: '3.5rem 2rem' }}>
+              <ShoppingBag size={48} color="var(--primary)" style={{ marginBottom: '1rem', opacity: 0.8 }} />
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#fff', marginBottom: '0.5rem' }}>ยังไม่มีสินค้าในหมวดหมู่นี้</h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>คุณสามารถลงสินค้าใหม่ได้ที่หน้า Backend Admin Panel ครับ</p>
             </div>
           )}
