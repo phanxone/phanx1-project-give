@@ -117,10 +117,14 @@ export const Shop = () => {
           <p style={{ color: 'var(--text-muted)' }}>กำลังโหลดหมวดหมู่สินค้า...</p>
         </div>
       ) : !selectedCategory ? (
-        /* CATEGORIES VIEW (Matching Image 2 Layout) */
+        {/* CATEGORIES VIEW (Matching Image 2 Layout - 2 Columns Grid) */}
         <div>
           {categories.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px, 1fr))', gap: '1.25rem' }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '1.25rem'
+            }}>
               {categories.map((cat) => {
                 const count = items.filter(i => i.category_id === cat.id || i.category_name === cat.name).length
                 return (
