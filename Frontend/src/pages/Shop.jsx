@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingBag, Zap, CheckCircle2, AlertCircle, ArrowLeft, Grid, Layers, Sparkles } from 'lucide-react'
+import { ShoppingBag, Zap, CheckCircle2, AlertCircle, ArrowLeft, ShoppingCart, Lock } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 export const Shop = () => {
   const { user } = useAuth()
   const [categories, setCategories] = useState([])
   const [items, setItems] = useState([])
-  const [selectedCategory, setSelectedCategory] = useState(null) // null = view categories grid, or category object
+  const [selectedCategory, setSelectedCategory] = useState(null)
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState(null)
   const [buyingId, setBuyingId] = useState(null)
@@ -38,6 +38,8 @@ export const Shop = () => {
   }
 
   const handleRedeem = async (item) => {
+    if (item.stock <= 0) return
+
     if (!user) {
       alert('กรุณาเข้าสู่ระบบก่อนทำการซื้อ/แลกสินค้า')
       return
@@ -64,6 +66,7 @@ export const Shop = () => {
       const data = await res.json()
       if (res.ok && data.success) {
         setMessage({ success: true, text: `สั่งซื้อ/แลกสินค้า "${item.title}" สำเร็จ! ออเดอร์ถูกส่งไปยัง Backend Admin เรียบร้อยแล้ว 🎉` })
+        fetchData() // Refresh stock count
       } else {
         setMessage({ success: false, text: data.message || 'เกิดข้อผิดพลาดในการแลกสินค้า' })
       }
@@ -74,13 +77,12 @@ export const Shop = () => {
     }
   }
 
-  // Filter items by category if selected
   const filteredItems = selectedCategory
     ? items.filter(i => i.category_id === selectedCategory.id || i.category_name === selectedCategory.name)
     : items
 
   return (
-    <div style={{ width: '100%', maxWidth: 1000, margin: '0 auto' }}>
+    <div style={{ width: '100%', maxWidth: 1040, margin: '0 auto' }}>
       {/* Breadcrumb Sequential Steps */}
       <div style={{
         display: 'flex',
@@ -114,30 +116,6 @@ export const Shop = () => {
         )}
       </div>
 
-      {/* Header Section */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <ShoppingBag color="var(--secondary)" />
-            <span>{selectedCategory ? `คลังสินค้า: ${selectedCategory.name}` : 'หมวดหมู่สินค้า & แมพเกม (Item Categories)'}</span>
-          </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-            {selectedCategory ? 'เลือกแลกไอเท็มสะสมในหมวดหมู่นี้' : 'เลือกหมวดหมู่หรือแมพเกมเพื่อเลือกแลกของรางวัล'}
-          </p>
-        </div>
-
-        {selectedCategory && (
-          <button
-            onClick={() => setSelectedCategory(null)}
-            className="btn-secondary"
-            style={{ width: 'auto', padding: '0.5rem 1rem', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-          >
-            <ArrowLeft size={16} />
-            <span>ย้อนกลับไปเลือกหมวดหมู่</span>
-          </button>
-        )}
-      </div>
-
       {message && (
         <div className={`alert ${message.success ? 'alert-success' : 'alert-error'}`} style={{ marginBottom: '1.5rem' }}>
           {message.success ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
@@ -151,7 +129,18 @@ export const Shop = () => {
           <p style={{ color: 'var(--text-muted)' }}>กำลังโหลดหมวดหมู่สินค้า...</p>
         </div>
       ) : !selectedCategory ? (
+        /* CATEGORIES VIEW (2 Columns Grid) */
         <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div>
+              <h1 style={{ fontSize: '1.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <ShoppingBag color="var(--secondary)" />
+                <span>หมวดหมู่สินค้า & แมพเกม (Item Categories)</span>
+              </h1>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>เลือกหมวดหมู่หรือแมพเกมเพื่อเลือกแลกของรางวัล</p>
+            </div>
+          </div>
+
           {categories.length > 0 ? (
             <div style={{
               display: 'grid',
@@ -225,7 +214,6 @@ export const Shop = () => {
               })}
             </div>
           ) : (
-            /* Empty Categories State */
             <div className="card" style={{ textAlign: 'center', padding: '3.5rem 2rem' }}>
               <ShoppingBag size={48} color="var(--primary)" style={{ marginBottom: '1rem', opacity: 0.8 }} />
               <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', marginBottom: '0.5rem' }}>ยังไม่ได้สร้างหมวดหมู่ / แมพสินค้า</h2>
@@ -236,40 +224,219 @@ export const Shop = () => {
           )}
         </div>
       ) : (
-        /* ITEMS VIEW IN SELECTED CATEGORY */
-        <div>
+        /* ITEMS VIEW IN SELECTED CATEGORY (Matching Image 1 Design) */
+        <div style={{ background: 'rgba(15, 17, 26, 0.85)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          {/* Top Header Row matching Image 1 */}
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.75rem', gap: '0.85rem', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setSelectedCategory(null)}
+              style={{
+                background: 'linear-gradient(135deg, #f95700, #ff5722)',
+                color: '#ffffff',
+                border: 'none',
+                padding: '0.55rem 1.25rem',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: '0 4px 12px rgba(249, 87, 0, 0.35)'
+              }}
+            >
+              <ArrowLeft size={18} />
+              <span>กลับ</span>
+            </button>
+
+            <div style={{ width: 3, height: 26, background: '#f95700', borderRadius: 2 }} />
+
+            <div>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1.2 }}>
+                {selectedCategory.name}
+              </h2>
+              <p style={{ fontSize: '0.82rem', color: '#9ca3af', marginTop: '0.15rem' }}>
+                &gt; เลือกไอเทมที่ต้องการ
+              </p>
+            </div>
+          </div>
+
+          {/* Items Grid Layout matching Image 1 */}
           {filteredItems.length > 0 ? (
-            <div className="grid-cards">
-              {filteredItems.map((item) => (
-                <div key={item.id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ width: '100%', height: 160, borderRadius: 12, overflow: 'hidden', marginBottom: '1rem', background: '#000' }}>
-                    <img src={item.image_url} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))',
+              gap: '1.25rem'
+            }}>
+              {filteredItems.map((item) => {
+                const isOutOfStock = item.stock <= 0
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      background: '#181b26',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '10px',
+                      padding: '0.75rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      transition: 'transform 0.2s, border-color 0.2s'
+                    }}
+                  >
+                    {/* Square Image Box with Overlay if Out of Stock */}
+                    <div style={{
+                      width: '100%',
+                      aspectRatio: '1 / 1',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      position: 'relative',
+                      background: '#0c0e14',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <img
+                        src={item.image_url}
+                        alt={item.title}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          filter: isOutOfStock ? 'grayscale(100%) brightness(0.35)' : 'none'
+                        }}
+                      />
+
+                      {isOutOfStock && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%) rotate(-10deg)',
+                          background: 'rgba(0, 0, 0, 0.85)',
+                          border: '1px solid rgba(239, 68, 68, 0.5)',
+                          color: '#ffffff',
+                          fontWeight: 800,
+                          fontSize: '0.82rem',
+                          padding: '0.35rem 1.25rem',
+                          borderRadius: '4px',
+                          whiteSpace: 'nowrap',
+                          boxShadow: '0 4px 15px rgba(0,0,0,0.8)'
+                        }}>
+                          สินค้าหมด
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Item Title */}
+                    <h3 style={{
+                      fontSize: '0.92rem',
+                      fontWeight: 700,
+                      color: '#ffffff',
+                      textTransform: 'uppercase',
+                      marginTop: '0.75rem',
+                      marginBottom: '0.5rem',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      letterSpacing: '0.5px'
+                    }}>
+                      {item.title}
+                    </h3>
+
+                    {/* Price and Stock Status Row */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto', marginBottom: '0.75rem' }}>
+                      <div>
+                        <div style={{ fontSize: '0.72rem', color: '#9ca3af' }}>ราคา</div>
+                        <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f95700', lineHeight: 1.1 }}>
+                          {item.points} <span style={{ fontSize: '0.75rem' }}>PTS</span>
+                        </div>
+                      </div>
+
+                      {isOutOfStock ? (
+                        <span style={{
+                          background: 'rgba(239, 68, 68, 0.2)',
+                          border: '1px solid rgba(239, 68, 68, 0.5)',
+                          color: '#fca5a5',
+                          fontWeight: 700,
+                          fontSize: '0.75rem',
+                          padding: '0.2rem 0.5rem',
+                          borderRadius: '4px'
+                        }}>
+                          หมด
+                        </span>
+                      ) : (
+                        <span style={{
+                          background: 'rgba(16, 185, 129, 0.2)',
+                          border: '1px solid rgba(16, 185, 129, 0.5)',
+                          color: '#34d399',
+                          fontWeight: 800,
+                          fontSize: '0.75rem',
+                          padding: '0.2rem 0.55rem',
+                          borderRadius: '4px'
+                        }}>
+                          x{item.stock}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Action Button */}
+                    {!isOutOfStock ? (
+                      <button
+                        onClick={() => handleRedeem(item)}
+                        disabled={buyingId === item.id}
+                        style={{
+                          background: 'linear-gradient(135deg, #f95700, #ff5722)',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: '6px',
+                          padding: '0.6rem',
+                          fontWeight: 700,
+                          fontSize: '0.88rem',
+                          cursor: 'pointer',
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.4rem',
+                          boxShadow: '0 4px 12px rgba(249, 87, 0, 0.3)',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        <ShoppingCart size={16} />
+                        <span>{buyingId === item.id ? 'กำลังสั่งซื้อ...' : 'สั่งซื้อ'}</span>
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          color: '#6b7280',
+                          borderRadius: '6px',
+                          padding: '0.6rem',
+                          fontWeight: 600,
+                          fontSize: '0.88rem',
+                          cursor: 'not-allowed',
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.4rem'
+                        }}
+                      >
+                        <ShoppingCart size={16} />
+                        <span>ไม่มีสินค้า</span>
+                      </button>
+                    )}
                   </div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.35rem' }}>{item.title}</h3>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', flex: 1, marginBottom: '1rem' }}>{item.description}</p>
-                  
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-                    <span className="points-tag">
-                      <Zap size={14} />
-                      {item.points} แต้ม
-                    </span>
-                    <button
-                      onClick={() => handleRedeem(item)}
-                      className="btn-primary"
-                      disabled={buyingId === item.id}
-                      style={{ marginTop: 0, padding: '0.5rem 1rem', fontSize: '0.85rem' }}
-                    >
-                      {buyingId === item.id ? 'กำลังสั่งซื้อ...' : '🛒 สั่งซื้อ / แลก'}
-                    </button>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
-            <div className="card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+            <div style={{ textAlign: 'center', padding: '3rem 2rem' }}>
               <ShoppingBag size={44} color="var(--primary)" style={{ marginBottom: '1rem', opacity: 0.8 }} />
               <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#fff', marginBottom: '0.5rem' }}>ยังไม่มีสินค้าในหมวดหมู่นี้</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>คุณสามารถเลือกหมวดหมู่นี้ตอนลงสินค้าใหม่ที่หน้า Backend Admin Panel ได้ครับ</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>คุณสามารถลงสินค้าใหม่ได้ที่หน้า Backend Admin Panel ครับ</p>
             </div>
           )}
         </div>
