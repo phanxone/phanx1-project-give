@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { Gift, ShoppingBag, ShieldCheck, Award, Zap, ChevronLeft, ChevronRight, Image as ImageIcon, Sparkles, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Gift, ShoppingBag, ShieldCheck, Award, Zap, ChevronLeft, ChevronRight, Image as ImageIcon, Sparkles, ArrowRight, CheckCircle2, AlertCircle, ShoppingCart } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 export const Home = () => {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [banners, setBanners] = useState([])
   const [items, setItems] = useState([])
   const [loadingItems, setLoadingItems] = useState(true)
@@ -40,7 +41,7 @@ export const Home = () => {
       const res = await fetch(`${apiBaseUrl}/items`)
       const data = await res.json()
       if (data.items && data.items.length > 0) {
-        setItems(data.items.slice(0, 6)) // Show top 6 latest items
+        setItems(data.items.slice(0, 8)) // Show top 8 latest items
       } else {
         setItems([])
       }
@@ -98,29 +99,28 @@ export const Home = () => {
   }, [banners])
 
   const nextSlide = () => {
-    if (banners.length > 1) {
-      setCurrentIndex((prev) => (prev + 1) % banners.length)
-    }
+    setCurrentIndex((prev) => (prev + 1) % banners.length)
   }
 
   const prevSlide = () => {
-    if (banners.length > 1) {
-      setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length)
-    }
+    setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length)
   }
 
-  const currentBanner = banners[currentIndex]
+  const currentBanner = banners[currentIndex] || {}
 
   return (
-    <div style={{ width: '100%', maxWidth: 1000, margin: '0 auto' }}>
-      {/* Banner Image Slider Section */}
-      <div className="card" style={{
-        padding: 0,
-        marginBottom: '2.5rem',
+    <div style={{ width: '100%', maxWidth: 1040, margin: '0 auto' }}>
+      {/* Hero Banner Slider Section */}
+      <div style={{
         position: 'relative',
-        overflow: 'hidden',
+        width: '100%',
         height: 380,
-        borderRadius: 'var(--radius-xl)'
+        borderRadius: 24,
+        overflow: 'hidden',
+        marginBottom: '2.5rem',
+        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.15)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        background: '#0c0f1d'
       }}>
         {banners.length > 0 ? (
           <>
@@ -317,31 +317,197 @@ export const Home = () => {
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>กำลังโหลดรายการสินค้าล่าสุด...</p>
           </div>
         ) : items.length > 0 ? (
-          <div className="grid-cards">
-            {items.map((item) => (
-              <div key={item.id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ width: '100%', height: 160, borderRadius: 12, overflow: 'hidden', marginBottom: '1rem', background: '#000' }}>
-                  <img src={item.image_url} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(215px, 1fr))',
+            gap: '1.35rem'
+          }}>
+            {items.map((item) => {
+              const isOutOfStock = (item.stock !== undefined ? item.stock : 10) <= 0
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => navigate('/shop')}
+                  style={{
+                    background: 'rgba(22, 30, 52, 0.7)',
+                    backdropFilter: 'blur(10px)',
+                    border: isOutOfStock ? '1px solid rgba(239, 68, 68, 0.2)' : '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '16px',
+                    padding: '0.85rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3)'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)'
+                    e.currentTarget.style.borderColor = isOutOfStock ? 'rgba(239, 68, 68, 0.4)' : 'rgba(99, 102, 241, 0.5)'
+                    e.currentTarget.style.boxShadow = isOutOfStock ? '0 12px 25px rgba(239, 68, 68, 0.15)' : '0 12px 25px rgba(99, 102, 241, 0.25)'
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.borderColor = isOutOfStock ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.08)'
+                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.3)'
+                  }}
+                >
+                  {/* Square Image Container */}
+                  <div style={{
+                    width: '100%',
+                    aspectRatio: '1 / 1',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    position: 'relative',
+                    background: '#0a0d16',
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <img
+                      src={item.image_url}
+                      alt={item.title}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        filter: isOutOfStock ? 'grayscale(100%) brightness(0.3)' : 'none',
+                        transition: 'transform 0.3s ease'
+                      }}
+                    />
+
+                    {isOutOfStock && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%) rotate(-8deg)',
+                        background: 'rgba(15, 23, 42, 0.92)',
+                        border: '1px solid rgba(239, 68, 68, 0.6)',
+                        color: '#f87171',
+                        fontWeight: 800,
+                        fontSize: '0.85rem',
+                        padding: '0.4rem 1.25rem',
+                        borderRadius: '8px',
+                        whiteSpace: 'nowrap',
+                        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(239, 68, 68, 0.3)',
+                        letterSpacing: '0.5px'
+                      }}>
+                        สินค้าหมด
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Item Title */}
+                  <h3 style={{
+                    fontSize: '0.95rem',
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    textTransform: 'uppercase',
+                    marginTop: '0.85rem',
+                    marginBottom: '0.5rem',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    letterSpacing: '0.3px'
+                  }}>
+                    {item.title}
+                  </h3>
+
+                  {/* Price and Stock Status Row */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', marginBottom: '0.85rem' }}>
+                    <div>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>ราคา</div>
+                      <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '0.2rem', lineHeight: 1.1 }}>
+                        <span>{item.points}</span>
+                        <span style={{ fontSize: '0.72rem', color: '#fbbf24', fontWeight: 700 }}>PTS</span>
+                      </div>
+                    </div>
+
+                    {isOutOfStock ? (
+                      <span style={{
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        color: '#fca5a5',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        padding: '0.2rem 0.65rem',
+                        borderRadius: '6px'
+                      }}>
+                        หมด
+                      </span>
+                    ) : (
+                      <span style={{
+                        background: 'rgba(16, 185, 129, 0.18)',
+                        border: '1px solid rgba(16, 185, 129, 0.45)',
+                        color: '#34d399',
+                        fontWeight: 800,
+                        fontSize: '0.75rem',
+                        padding: '0.2rem 0.65rem',
+                        borderRadius: '6px',
+                        boxShadow: '0 0 10px rgba(16, 185, 129, 0.2)'
+                      }}>
+                        x{item.stock !== undefined ? item.stock : 10}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Action Button */}
+                  {!isOutOfStock ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        navigate('/shop')
+                      }}
+                      style={{
+                        background: 'linear-gradient(135deg, #6366f1, #ec4899)',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '10px',
+                        padding: '0.65rem',
+                        fontWeight: 700,
+                        fontSize: '0.88rem',
+                        cursor: 'pointer',
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.45rem',
+                        boxShadow: '0 4px 15px rgba(99, 102, 241, 0.35)',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseOver={(e) => e.currentTarget.style.boxShadow = '0 6px 20px rgba(236, 72, 153, 0.45)'}
+                      onMouseOut={(e) => e.currentTarget.style.boxShadow = '0 4px 15px rgba(99, 102, 241, 0.35)'}
+                    >
+                      <ShoppingCart size={16} />
+                      <span>สั่งซื้อ</span>
+                    </button>
+                  ) : (
+                    <button
+                      disabled
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.04)',
+                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                        color: 'var(--text-subtle)',
+                        borderRadius: '10px',
+                        padding: '0.65rem',
+                        fontWeight: 600,
+                        fontSize: '0.88rem',
+                        cursor: 'not-allowed',
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.45rem'
+                      }}
+                    >
+                      <ShoppingCart size={16} />
+                      <span>ไม่มีสินค้า</span>
+                    </button>
+                  )}
                 </div>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: '0.35rem' }}>{item.title}</h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', flex: 1, marginBottom: '1rem' }}>{item.description}</p>
-                
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-                  <span className="points-tag">
-                    <Zap size={14} />
-                    {item.points} แต้ม
-                  </span>
-                  <button
-                    onClick={() => handleRedeem(item)}
-                    className="btn-primary"
-                    disabled={buyingId === item.id}
-                    style={{ marginTop: 0, padding: '0.45rem 0.9rem', fontSize: '0.82rem' }}
-                  >
-                    {buyingId === item.id ? 'กำลังสั่งซื้อ...' : '🛒 สั่งซื้อ / แลก'}
-                  </button>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         ) : (
           <div className="card" style={{ textAlign: 'center', padding: '2.5rem' }}>
