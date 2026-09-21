@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ShoppingBag, Zap, CheckCircle2, AlertCircle, ArrowLeft, Grid, Layer, Sparkles } from 'lucide-react'
+import { ShoppingBag, Zap, CheckCircle2, AlertCircle, ArrowLeft, Grid, Layers, Sparkles } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 export const Shop = () => {
