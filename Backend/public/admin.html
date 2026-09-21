@@ -403,12 +403,12 @@
   </nav>
 
   <div class="container">
-    <!-- Admin Menu Tabs -->
+    <!-- Admin Menu Tabs (Logical Sequential Order) -->
     <div class="admin-tabs">
-      <button class="tab-btn active" onclick="switchTab('overview')">📊 ภาพรวมระบบ</button>
-      <button class="tab-btn" onclick="switchTab('orders')">🛒 รับออเดอร์ผู้เล่น</button>
-      <button class="tab-btn" onclick="switchTab('categories')">📦 จัดการหมวดหมู่ & ลงสินค้า</button>
-      <button class="tab-btn" onclick="switchTab('banners')">🖼️ ตั้งค่าสไลด์แบนเนอร์</button>
+      <button class="tab-btn active" onclick="switchTab('overview')">1️⃣ 📊 ภาพรวมระบบ</button>
+      <button class="tab-btn" onclick="switchTab('banners')">2️⃣ 🖼️ ตั้งค่าสไลด์แบนเนอร์</button>
+      <button class="tab-btn" onclick="switchTab('categories')">3️⃣ 📦 จัดการหมวดหมู่ & ลงสินค้า</button>
+      <button class="tab-btn" onclick="switchTab('orders')">4️⃣ 🛒 รับออเดอร์ผู้เล่น</button>
     </div>
 
     <!-- TAB 1: Overview -->
@@ -416,7 +416,7 @@
       <div class="card">
         <span class="admin-badge">✓ ล็อกอินสำเร็จ (สิทธิ์ Admin)</span>
         <h1 id="welcomeUser">ยินดีต้อนรับสู่แผงควบคุม Admin!</h1>
-        <p>สร้าง, แก้ไข และลบ หมวดหมู่สินค้า/แมพเกม, เพิ่มสินค้าในหมวดหมู่, อัปโหลดรูปสไลด์แบนเนอร์ และจัดการออเดอร์ (ระบบ CRUD ครบถ้วน)</p>
+        <p>ลำดับขั้นตอนการทำงาน: 1️⃣ ดูภาพรวม ➔ 2️⃣ ตั้งค่าสไลด์แบนเนอร์ ➔ 3️⃣ สร้างหมวดหมู่แล้วกดเข้าหมวดหมู่เพื่อลงสินค้า ➔ 4️⃣ ตรวจรับออเดอร์จากผู้เล่น</p>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
           <div style="background: rgba(11, 15, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1.25rem;">
@@ -435,35 +435,36 @@
       </div>
     </div>
 
-    <!-- TAB 2: Orders Management -->
-    <div id="tab-orders" class="tab-content">
+    <!-- TAB 2: Banner Settings -->
+    <div id="tab-banners" class="tab-content">
       <div class="card">
-        <h2>🛒 รายการออเดอร์ที่เข้ามาจากผู้เล่น (Orders)</h2>
-        <p style="margin-bottom: 1rem;">ออเดอร์การแลกของรางวัลจากผู้เล่นหน้าเว็บ ให้กดปุ่มยืนยันส่งของเมื่อจัดส่งสำเร็จ</p>
-        <table>
-          <thead>
-            <tr>
-              <th>ผู้เล่น (Username)</th>
-              <th>สินค้าที่แลก</th>
-              <th>แต้มที่ใช้</th>
-              <th>สถานะ</th>
-              <th>จัดการ</th>
-            </tr>
-          </thead>
-          <tbody id="ordersTableBody">
-            <tr><td colspan="5" style="text-align: center; color: #9ca3af;">กำลังโหลดออเดอร์...</td></tr>
-          </tbody>
-        </table>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2>🖼️ ตั้งค่ารูปสไลด์หน้าเว็บ (Banner Slider Settings)</h2>
+            <p style="color: #9ca3af; font-size: 0.88rem;">จัดการสร้าง, แก้ไข และลบ รูปภาพแบนเนอร์ที่จะสไลด์แสดงผลบนหน้าแรก</p>
+          </div>
+          <button class="btn-add" onclick="openAddBannerModal()">
+            <span>➕ เพิ่มรูปสไลด์แบนเนอร์ใหม่</span>
+          </button>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <h3 style="font-size: 1rem; color: #9ca3af; margin-bottom: 0.5rem;">รายการรูปสไลด์แบนเนอร์ปัจจุบัน</h3>
+          <div id="bannersGrid" class="banner-grid">
+            <p style="color: #9ca3af; font-size: 0.85rem;">กำลังโหลดแบนเนอร์...</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- TAB 3: Categories & Item Management (Unified Menu with Popup Modal CRUD) -->
+    <!-- TAB 3: Categories & Item Management (Unified Menu with Step Breadcrumbs) -->
     <div id="tab-categories" class="tab-content">
       <!-- VIEW 1: Categories List & Creation Button -->
       <div id="categoryListView">
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
             <div>
+              <div style="font-size: 0.8rem; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #a5b4fc; padding: 0.3rem 0.75rem; border-radius: 6px; display: inline-block; margin-bottom: 0.5rem; font-weight: 600;">ขั้นตอนที่ 1 ➔ เลือกหมวดหมู่หรือแมพเกม</div>
               <h2>📁 ตั้งค่าหมวดหมู่สินค้า / แมพเกม (Categories)</h2>
               <p style="color: #9ca3af; font-size: 0.88rem;">สร้าง, แก้ไข หรือลบหมวดหมู่/แมพเกม จากนั้นกดปุ่ม "📦 เข้าไปจัดการ / ลงสินค้า" เพื่อจัดการไอเท็มสินค้าในหมวดหมู่นั้นๆ</p>
             </div>
@@ -480,9 +481,10 @@
         </div>
       </div>
 
-      <!-- VIEW 2: Inside Specific Category (Managing & Adding Items with Popup Modal) -->
+      <!-- VIEW 2: Inside Specific Category (Managing & Adding Items with Step Breadcrumb) -->
       <div id="categoryItemDetailView" style="display: none;">
         <div class="card">
+          <div style="font-size: 0.8rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; padding: 0.3rem 0.75rem; border-radius: 6px; display: inline-block; margin-bottom: 0.75rem; font-weight: 600;">ขั้นตอนที่ 1: เลือกหมวดหมู่ ➔ ขั้นตอนที่ 2: จัดการลงสินค้าในหมวดหมู่นี้</div>
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
             <div>
               <h2 id="activeCatTitle" style="color: #fff;">📦 จัดการลงสินค้าในหมวดหมู่</h2>
@@ -519,25 +521,25 @@
       </div>
     </div>
 
-    <!-- TAB 4: Banner Settings -->
-    <div id="tab-banners" class="tab-content">
+    <!-- TAB 4: Orders Management -->
+    <div id="tab-orders" class="tab-content">
       <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
-          <div>
-            <h2>🖼️ ตั้งค่ารูปสไลด์หน้าเว็บ (Banner Slider Settings)</h2>
-            <p style="color: #9ca3af; font-size: 0.88rem;">จัดการสร้าง, แก้ไข และลบ รูปภาพแบนเนอร์ที่จะสไลด์แสดงผลบนหน้าแรก</p>
-          </div>
-          <button class="btn-add" onclick="openAddBannerModal()">
-            <span>➕ เพิ่มรูปสไลด์แบนเนอร์ใหม่</span>
-          </button>
-        </div>
-
-        <div style="margin-top: 1rem;">
-          <h3 style="font-size: 1rem; color: #9ca3af; margin-bottom: 0.5rem;">รายการรูปสไลด์แบนเนอร์ปัจจุบัน</h3>
-          <div id="bannersGrid" class="banner-grid">
-            <p style="color: #9ca3af; font-size: 0.85rem;">กำลังโหลดแบนเนอร์...</p>
-          </div>
-        </div>
+        <h2>🛒 รายการออเดอร์ที่เข้ามาจากผู้เล่น (Orders)</h2>
+        <p style="margin-bottom: 1rem;">ออเดอร์การแลกของรางวัลจากผู้เล่นหน้าเว็บ ให้กดปุ่มยืนยันส่งของเมื่อจัดส่งสำเร็จ</p>
+        <table>
+          <thead>
+            <tr>
+              <th>ผู้เล่น (Username)</th>
+              <th>สินค้าที่แลก</th>
+              <th>แต้มที่ใช้</th>
+              <th>สถานะ</th>
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr><td colspan="5" style="text-align: center; color: #9ca3af;">กำลังโหลดออเดอร์...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 

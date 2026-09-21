@@ -80,6 +80,39 @@ export const Shop = () => {
 
   return (
     <div style={{ width: '100%', maxWidth: 1000, margin: '0 auto' }}>
+      {/* Breadcrumb Sequential Steps */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        fontSize: '0.85rem',
+        color: 'var(--text-muted)',
+        marginBottom: '1.25rem',
+        background: 'rgba(18, 24, 38, 0.6)',
+        padding: '0.5rem 1rem',
+        borderRadius: 8,
+        border: '1px solid rgba(255, 255, 255, 0.08)'
+      }}>
+        <Link to="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>🏠 หน้าแรก</Link>
+        <span>/</span>
+        <span
+          onClick={() => setSelectedCategory(null)}
+          style={{
+            color: selectedCategory ? 'var(--secondary)' : '#fff',
+            fontWeight: selectedCategory ? 500 : 600,
+            cursor: selectedCategory ? 'pointer' : 'default'
+          }}
+        >
+          🎒 คลังสินค้า (หมวดหมู่)
+        </span>
+        {selectedCategory && (
+          <>
+            <span>/</span>
+            <span style={{ color: '#fff', fontWeight: 600 }}>📦 {selectedCategory.name}</span>
+          </>
+        )}
+      </div>
+
       {/* Header Section */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
