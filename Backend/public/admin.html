@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backend Admin Dashboard - Rewards Server</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
+    body {
+      background-color: #0b0f19;
+      color: #f3f4f6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.15) 0%, transparent 40%);
+    }
+    .navbar {
+      background: rgba(18, 24, 38, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand { font-size: 1.25rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.5rem; }
+    .btn-logout {
+      padding: 0.45rem 1rem;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-logout:hover { background: rgba(239, 68, 68, 0.3); }
+
+    .admin-tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(11, 15, 25, 0.6);
+      padding: 0.35rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      background: transparent;
+      border: none;
+      color: #9ca3af;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .tab-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .container {
+      flex: 1;
+      max-width: 1000px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+    }
+    .card {
+      background: rgba(18, 24, 38, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .admin-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #fff; }
+    p { color: #9ca3af; font-size: 0.95rem; }
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.35rem; }
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(11, 15, 25, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    input[type="file"] { padding: 0.5rem; cursor: pointer; }
+    
+    .btn-add {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    .btn-add:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .btn-cancel {
+      padding: 0.75rem 1.25rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #d1d5db;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-cancel:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.9rem;
+    }
+    th { background: rgba(11, 15, 25, 0.6); color: #9ca3af; font-weight: 600; }
+    .status-pending { color: #fcd34d; background: rgba(245, 158, 11, 0.15); padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .status-completed { color: #34d399; background: rgba(16, 185, 129, 0.15); padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .btn-complete {
+      padding: 0.25rem 0.6rem;
+      background: #10b981;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .btn-delete {
+      padding: 0.25rem 0.6rem;
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .banner-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; margin-top: 1rem;
+    }
+    .banner-card {
+      background: rgba(11, 15, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden; padding: 0.75rem;
+    }
+    .banner-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .preview-img { width: 100%; max-height: 120px; object-fit: cover; border-radius: 6px; margin-top: 0.5rem; display: none; border: 1px solid rgba(255,255,255,0.1); }
+
+    /* Modern Popup Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 9, 19, 0.85);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-box {
+      background: rgba(18, 24, 38, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 520px;
+      padding: 1.75rem;
+      transform: scale(0.92) translateY(20px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-overlay.active .modal-box {
+      transform: scale(1) translateY(0);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 0.75rem;
+    }
+    .modal-header h3 { font-size: 1.2rem; font-weight: 700; color: #fff; }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: #9ca3af;
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-close:hover { color: #fff; }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 1rem;
+    }
+
+    /* Modern Toast Container */
+    #toastContainer {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .toast {
+      min-width: 280px;
+      padding: 0.9rem 1.25rem;
+      border-radius: 12px;
+      backdrop-filter: blur(16px);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(50px) scale(0.95); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    .toast-success { background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
+    .toast-error { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Toast Notifications -->
+  <div id="toastContainer"></div>
+
+  <!-- MODAL 1: ADD CATEGORY MODAL POPUP -->
+  <div id="modalCategory" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>📁 เพิ่มหมวดหมู่ / แมพเกมใหม่</h3>
+        <button class="modal-close" onclick="closeModal('modalCategory')">&times;</button>
+      </div>
+      <form onsubmit="handleAddCategory(event)">
+        <div class="form-group">
+          <label>ชื่อหมวดหมู่ / แมพ</label>
+          <input type="text" id="catName" placeholder="เช่น 🧊 เติม Robux ถูกกว่าเติมเอง หรือ 🍇 ขายสินค้าแมพ BLOX FRUITS" required>
+        </div>
+        <div class="form-group">
+          <label>ข้อความย่อย / คำอธิบาย</label>
+          <input type="text" id="catDesc" placeholder="เช่น เลือกหมวดหมู่เพื่อดูเพิ่มเติม">
+        </div>
+        <div class="form-group">
+          <label>📁 อัปโหลดรูปแบนเนอร์หมวดหมู่จากเครื่อง หรือ วาง URL</label>
+          <input type="file" id="catFile" accept="image/*" onchange="previewImage(this, 'catPreview', 'catImage')">
+          <input type="text" id="catImage" placeholder="หรือวาง URL รูปภาพแบนเนอร์หมวดหมู่ที่นี่..." style="margin-top: 0.5rem;">
+          <img id="catPreview" class="preview-img" alt="Category Preview">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" onclick="closeModal('modalCategory')">ยกเลิก</button>
+          <button type="submit" class="btn-add">➕ บันทึกหมวดหมู่ใหม่</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: ADD ITEM MODAL POPUP -->
+  <div id="modalItem" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalItemHeader">📦 เพิ่มสินค้าใหม่ในหมวดหมู่</h3>
+        <button class="modal-close" onclick="closeModal('modalItem')">&times;</button>
+      </div>
+      <form onsubmit="handleAddItemInCat(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label>ชื่อสินค้า / ไอเท็ม</label>
+            <input type="text" id="itemTitleInCat" placeholder="เช่น ดาบชูร่า Blox Fruits" required>
+          </div>
+          <div class="form-group">
+            <label>ราคาแต้ม (Points)</label>
+            <input type="number" id="itemPointsInCat" placeholder="500" required>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label>จำนวนสต็อก (Stock)</label>
+            <input type="number" id="itemStockInCat" placeholder="10" required>
+          </div>
+          <div class="form-group">
+            <label>📁 อัปโหลดรูปสินค้าจากเครื่อง</label>
+            <input type="file" id="itemFileInCat" accept="image/*" onchange="previewImage(this, 'itemPreviewInCat', 'itemImageInCat')">
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="text" id="itemImageInCat" placeholder="หรือวาง URL รูปภาพสินค้าที่นี่...">
+          <img id="itemPreviewInCat" class="preview-img" alt="Item Preview">
+        </div>
+        <div class="form-group">
+          <label>รายละเอียดสินค้า</label>
+          <textarea id="itemDescInCat" rows="2" placeholder="รายละเอียดของรางวัล..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" onclick="closeModal('modalItem')">ยกเลิก</button>
+          <button type="submit" class="btn-add">➕ บันทึกสินค้าใหม่</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: ADD BANNER MODAL POPUP -->
+  <div id="modalBanner" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>🖼️ เพิ่มรูปสไลด์แบนเนอร์หน้าแรก</h3>
+        <button class="modal-close" onclick="closeModal('modalBanner')">&times;</button>
+      </div>
+      <form onsubmit="handleAddBanner(event)">
+        <div class="form-group">
+          <label>หัวข้อ / ชื่อแบนเนอร์</label>
+          <input type="text" id="bannerTitle" placeholder="เช่น กิจกรรมแจก Robux ฟรี">
+        </div>
+        <div class="form-group">
+          <label>📁 อัปโหลดรูปสไลด์แบนเนอร์จากเครื่อง หรือ วาง URL</label>
+          <input type="file" id="bannerFile" accept="image/*" onchange="previewImage(this, 'bannerPreview', 'bannerUrl')">
+          <input type="text" id="bannerUrl" placeholder="หรือวาง URL รูปภาพที่นี่..." style="margin-top: 0.5rem;">
+          <img id="bannerPreview" class="preview-img" alt="Banner Preview">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" onclick="closeModal('modalBanner')">ยกเลิก</button>
+          <button type="submit" class="btn-add">➕ บันทึกรูปแบนเนอร์</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="brand">👑 Backend Admin Panel</div>
+    <button class="btn-logout" onclick="handleLogout()">ออกจากระบบ</button>
+  </nav>
+
+  <div class="container">
+    <!-- Admin Menu Tabs -->
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="switchTab('overview')">📊 ภาพรวมระบบ</button>
+      <button class="tab-btn" onclick="switchTab('orders')">🛒 รับออเดอร์ผู้เล่น</button>
+      <button class="tab-btn" onclick="switchTab('categories')">📦 จัดการหมวดหมู่ & ลงสินค้า</button>
+      <button class="tab-btn" onclick="switchTab('banners')">🖼️ ตั้งค่าสไลด์แบนเนอร์</button>
+    </div>
+
+    <!-- TAB 1: Overview -->
+    <div id="tab-overview" class="tab-content active">
+      <div class="card">
+        <span class="admin-badge">✓ ล็อกอินสำเร็จ (สิทธิ์ Admin)</span>
+        <h1 id="welcomeUser">ยินดีต้อนรับสู่แผงควบคุม Admin!</h1>
+        <p>สร้างหมวดหมู่/แมพสินค้า, กดเข้าไปในหมวดหมู่เพื่อลงสินค้าผ่าน Popup Modal, อัปโหลดรูปสไลด์แบนเนอร์ และรับออเดอร์จากผู้เล่นฝั่ง Backend</p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+          <div style="background: rgba(11, 15, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1.25rem;">
+            <div style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.35rem;">สถานะเซิร์ฟเวอร์</div>
+            <div style="font-size: 1.4rem; font-weight: 700; color: #34d399;">Online 🟢</div>
+          </div>
+          <div style="background: rgba(11, 15, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1.25rem;">
+            <div style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.35rem;">สิทธิ์ของคุณ</div>
+            <div style="font-size: 1.4rem; font-weight: 700; color: #a5b4fc;">ADMIN 👑</div>
+          </div>
+          <div style="background: rgba(11, 15, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1.25rem;">
+            <div style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.35rem;">รูปแบบเพิ่มข้อมูล</div>
+            <div style="font-size: 1.4rem; font-weight: 700; color: #f472b6;">Popup Modal ⚡</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Orders Management -->
+    <div id="tab-orders" class="tab-content">
+      <div class="card">
+        <h2>🛒 รายการออเดอร์ที่เข้ามาจากผู้เล่น (Orders)</h2>
+        <p style="margin-bottom: 1rem;">ออเดอร์การแลกของรางวัลจากผู้เล่นหน้าเว็บ ให้กดปุ่มยืนยันส่งของเมื่อจัดส่งสำเร็จ</p>
+        <table>
+          <thead>
+            <tr>
+              <th>ผู้เล่น (Username)</th>
+              <th>สินค้าที่แลก</th>
+              <th>แต้มที่ใช้</th>
+              <th>สถานะ</th>
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr><td colspan="5" style="text-align: center; color: #9ca3af;">กำลังโหลดออเดอร์...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 3: Categories & Item Management (Unified Menu with Popup Modal) -->
+    <div id="tab-categories" class="tab-content">
+      <!-- VIEW 1: Categories List & Creation Button -->
+      <div id="categoryListView">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2>📁 ตั้งค่าหมวดหมู่สินค้า / แมพเกม (Categories)</h2>
+              <p style="color: #9ca3af; font-size: 0.88rem;">สร้างหมวดหมู่หรือแมพเกมใหม่ จากนั้นกดปุ่ม "📦 เข้าไปจัดการ / ลงสินค้า" เพื่อลงไอเท็มสินค้าเข้าในหมวดหมู่นั้นๆ</p>
+            </div>
+            <button class="btn-add" onclick="openModal('modalCategory')">
+              <span>➕ เพิ่มหมวดหมู่ / แมพใหม่</span>
+            </button>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <div id="categoriesGrid" class="banner-grid">
+              <p style="color: #9ca3af; font-size: 0.85rem;">กำลังโหลดหมวดหมู่...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 2: Inside Specific Category (Managing & Adding Items with Popup Modal) -->
+      <div id="categoryItemDetailView" style="display: none;">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <h2 id="activeCatTitle" style="color: #fff;">📦 จัดการลงสินค้าในหมวดหมู่</h2>
+              <p style="color: #9ca3af; font-size: 0.85rem;">กดปุ่มเพื่อเพิ่มสินค้าใหม่ผ่าน Popup และจัดการลบสินค้าทั้งหมดในหมวดหมู่นี้</p>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <button class="btn-add" onclick="openModal('modalItem')">
+                <span>➕ เพิ่มสินค้าในหมวดหมู่นี้</span>
+              </button>
+              <button onclick="closeCategoryItems()" class="btn-logout" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;">
+                ← ย้อนกลับไปหมวดหมู่ทั้งหมด
+              </button>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <h3 style="font-size: 1rem; color: #fff; margin-bottom: 0.75rem;">รายการสินค้าในหมวดหมู่นี้</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>รูปสินค้า</th>
+                  <th>ชื่อสินค้า</th>
+                  <th>แต้ม</th>
+                  <th>สต็อก</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="categoryItemsTableBody">
+                <tr><td colspan="5" style="text-align: center; color: #9ca3af;">ยังไม่มีสินค้าในหมวดหมู่นี้</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: Banner Settings -->
+    <div id="tab-banners" class="tab-content">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2>🖼️ ตั้งค่ารูปสไลด์หน้าเว็บ (Banner Slider Settings)</h2>
+            <p style="color: #9ca3af; font-size: 0.88rem;">จัดการอัปโหลดรูปภาพแบนเนอร์ที่จะสไลด์แสดงผลบนหน้าแรก</p>
+          </div>
+          <button class="btn-add" onclick="openModal('modalBanner')">
+            <span>➕ เพิ่มรูปสไลด์แบนเนอร์ใหม่</span>
+          </button>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <h3 style="font-size: 1rem; color: #9ca3af; margin-bottom: 0.5rem;">รายการรูปสไลด์แบนเนอร์ปัจจุบัน</h3>
+          <div id="bannersGrid" class="banner-grid">
+            <p style="color: #9ca3af; font-size: 0.85rem;">กำลังโหลดแบนเนอร์...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let activeCategory = null; // { id, name }
+
+    const adminUser = localStorage.getItem('adminUser');
+    if (adminUser) {
+      document.getElementById('welcomeUser').innerText = `ยินดีต้อนรับ, ${adminUser}! 👑`;
+    }
+
+    // Modal Control Functions
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    // Close modal when clicking outside modal box
+    window.onclick = function(e) {
+      if (e.target.classList.contains('modal-overlay')) {
+        e.target.classList.remove('active');
+      }
+    }
+
+    // Custom Glowing Toast Notification System
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
+      toast.innerHTML = `<span>${type === 'success' ? '🎉' : '⚠️'}</span> <span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(50px)';
+        toast.style.transition = '0.3s';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      event.currentTarget.classList.add('active');
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('adminUser');
+      localStorage.removeItem('adminToken');
+      window.location.href = '/login';
+    }
+
+    function previewImage(fileInput, previewId, textInputId) {
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById(previewId);
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          document.getElementById(textInputId).value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function loadCategories() {
+      try {
+        const res = await fetch('/api/items/categories');
+        const data = await res.json();
+        const grid = document.getElementById('categoriesGrid');
+
+        if (data.categories && data.categories.length > 0) {
+          grid.innerHTML = data.categories.map(c => `
+            <div class="banner-card" style="display:flex; flex-direction:column; padding:0.75rem;">
+              <img src="${c.image_url || 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500'}" alt="${c.name}" style="height:110px; object-fit:cover; border-radius:8px;" />
+              <div style="font-size:0.95rem; margin: 0.5rem 0 0.2rem 0; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.name}</div>
+              <div style="font-size:0.8rem; color:#9ca3af; margin-bottom:0.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.description || 'ไม่มีคำอธิบาย'}</div>
+              <button class="btn-add" style="width:100%; margin-bottom:0.5rem; background:linear-gradient(135deg, #10b981, #059669); font-size:0.8rem; padding:0.5rem; justify-content:center;" onclick="openCategoryItems('${c.id}', '${c.name.replace(/'/g, "\\'")}')">📦 เข้าไปจัดการ / ลงสินค้า</button>
+              <button class="btn-delete" style="width:100%; font-size:0.8rem; padding:0.4rem;" onclick="deleteCategory('${c.id}')">🗑️ ลบหมวดหมู่</button>
+            </div>
+          `).join('');
+        } else {
+          grid.innerHTML = `<p style="color: #9ca3af; font-size: 0.85rem;">ยังไม่มีหมวดหมู่ที่เพิ่มไว้ กดปุ่มด้านบนเพื่อเพิ่มหมวดหมู่ใหม่</p>`;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function openCategoryItems(catId, catName) {
+      activeCategory = { id: catId, name: catName };
+      document.getElementById('categoryListView').style.display = 'none';
+      document.getElementById('categoryItemDetailView').style.display = 'block';
+      document.getElementById('activeCatTitle').innerText = `📦 จัดการลงสินค้าในหมวดหมู่: ${catName}`;
+      document.getElementById('modalItemHeader').innerText = `📦 เพิ่มสินค้าใหม่ใน "${catName}"`;
+      loadItemsForActiveCategory();
+    }
+
+    function closeCategoryItems() {
+      activeCategory = null;
+      document.getElementById('categoryItemDetailView').style.display = 'none';
+      document.getElementById('categoryListView').style.display = 'block';
+      loadCategories();
+    }
+
+    async function loadItemsForActiveCategory() {
+      if (!activeCategory) return;
+      try {
+        const res = await fetch('/api/items');
+        const data = await res.json();
+        const tbody = document.getElementById('categoryItemsTableBody');
+        const catItems = (data.items || []).filter(i => i.category_id === activeCategory.id || i.category_name === activeCategory.name);
+
+        if (catItems.length > 0) {
+          tbody.innerHTML = catItems.map(item => `
+            <tr>
+              <td><img src="${item.image_url}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px;" /></td>
+              <td><strong>${item.title}</strong></td>
+              <td>${item.points} PTS</td>
+              <td>${item.stock} ชิ้น</td>
+              <td>
+                <button class="btn-delete" onclick="deleteItem('${item.id}')">🗑️ ลบสินค้า</button>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #9ca3af;">ยังไม่มีสินค้าในหมวดหมู่นี้ กดปุ่ม "➕ เพิ่มสินค้าในหมวดหมู่นี้" ด้านบน</td></tr>`;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function handleAddCategory(e) {
+      e.preventDefault();
+      const name = document.getElementById('catName').value;
+      const description = document.getElementById('catDesc').value;
+      const image_url = document.getElementById('catImage').value;
+
+      try {
+        const res = await fetch('/api/items/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, description, image_url })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast('เพิ่มหมวดหมู่ / แมพสำเร็จ! 🎉', 'success');
+          e.target.reset();
+          document.getElementById('catPreview').style.display = 'none';
+          closeModal('modalCategory');
+          loadCategories();
+        } else {
+          showToast(data.message || 'เกิดข้อผิดพลาด', 'error');
+        }
+      } catch (err) {
+        showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ API', 'error');
+      }
+    }
+
+    async function deleteCategory(id) {
+      try {
+        const res = await fetch(`/api/items/categories/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('ลบหมวดหมู่เรียบร้อยแล้ว', 'success');
+          loadCategories();
+        }
+      } catch (err) {
+        showToast('เกิดข้อผิดพลาดในการลบหมวดหมู่', 'error');
+      }
+    }
+
+    async function handleAddItemInCat(e) {
+      e.preventDefault();
+      if (!activeCategory) {
+        showToast('ไม่พบข้อมูลหมวดหมู่', 'error');
+        return;
+      }
+
+      const title = document.getElementById('itemTitleInCat').value;
+      const points = document.getElementById('itemPointsInCat').value;
+      const stock = document.getElementById('itemStockInCat').value;
+      const image_url = document.getElementById('itemImageInCat').value;
+      const description = document.getElementById('itemDescInCat').value;
+
+      if (!image_url) {
+        showToast('กรุณาเลือกไฟล์รูปสินค้าจากเครื่อง หรือระบุ URL รูปภาพ', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/items', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title,
+            points,
+            stock,
+            image_url,
+            description,
+            category_id: activeCategory.id,
+            category_name: activeCategory.name
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast('เพิ่มสินค้าเข้าหมวดหมู่สำเร็จ! 🎉', 'success');
+          e.target.reset();
+          document.getElementById('itemPreviewInCat').style.display = 'none';
+          closeModal('modalItem');
+          loadItemsForActiveCategory();
+        } else {
+          showToast(data.message || 'เกิดข้อผิดพลาด', 'error');
+        }
+      } catch (err) {
+        showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ API', 'error');
+      }
+    }
+
+    async function deleteItem(id) {
+      try {
+        const res = await fetch(`/api/items/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('ลบสินค้าเรียบร้อยแล้ว', 'success');
+          loadItemsForActiveCategory();
+        }
+      } catch (err) {
+        showToast('เกิดข้อผิดพลาดในการลบสินค้า', 'error');
+      }
+    }
+
+    async function loadBanners() {
+      try {
+        const res = await fetch('/api/items/banners');
+        const data = await res.json();
+        const grid = document.getElementById('bannersGrid');
+
+        if (data.banners && data.banners.length > 0) {
+          grid.innerHTML = data.banners.map(b => `
+            <div class="banner-card">
+              <img src="${b.image_url}" alt="${b.title || 'banner'}" />
+              <div style="font-size:0.8rem; margin: 0.35rem 0; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${b.title || 'แบนเนอร์'}</div>
+              <button class="btn-delete" style="width:100%;" onclick="deleteBanner('${b.id}')">🗑️ ลบแบนเนอร์</button>
+            </div>
+          `).join('');
+        } else {
+          grid.innerHTML = `<p style="color: #9ca3af; font-size: 0.85rem;">ยังไม่มีรูปสไลด์แบนเนอร์ที่เพิ่มไว้ กดปุ่มด้านบนเพื่อเพิ่มแบนเนอร์ใหม่</p>`;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function handleAddBanner(e) {
+      e.preventDefault();
+      const image_url = document.getElementById('bannerUrl').value;
+      const title = document.getElementById('bannerTitle').value;
+
+      if (!image_url) {
+        showToast('กรุณาเลือกไฟล์รูปภาพจากเครื่อง หรือระบุ URL รูปภาพ', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/items/banners', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image_url, title })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast('เพิ่มรูปสไลด์แบนเนอร์สำเร็จ! 🎉', 'success');
+          e.target.reset();
+          document.getElementById('bannerPreview').style.display = 'none';
+          closeModal('modalBanner');
+          loadBanners();
+        } else {
+          showToast(data.message || 'เกิดข้อผิดพลาด', 'error');
+        }
+      } catch (err) {
+        showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ API', 'error');
+      }
+    }
+
+    async function deleteBanner(id) {
+      try {
+        const res = await fetch(`/api/items/banners/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('ลบรูปสไลด์แบนเนอร์เรียบร้อยแล้ว', 'success');
+          loadBanners();
+        }
+      } catch (err) {
+        showToast('เกิดข้อผิดพลาดในการลบแบนเนอร์', 'error');
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        const res = await fetch('/api/items/orders');
+        const data = await res.json();
+        const tbody = document.getElementById('ordersTableBody');
+        
+        if (data.orders && data.orders.length > 0) {
+          tbody.innerHTML = data.orders.map(o => `
+            <tr>
+              <td><strong>${o.username}</strong></td>
+              <td>${o.item_title}</td>
+              <td>${o.points_spent} PTS</td>
+              <td><span class="${o.status === 'completed' ? 'status-completed' : 'status-pending'}">${o.status}</span></td>
+              <td>
+                ${o.status !== 'completed' ? `<button class="btn-complete" onclick="completeOrder('${o.id}')">ยืนยันส่งของ</button>` : '✓ ส่งแล้ว'}
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #9ca3af;">ยังไม่มีออเดอร์เข้ามา</td></tr>`;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function completeOrder(id) {
+      try {
+        const res = await fetch(`/api/items/orders/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'completed' })
+        });
+        if (res.ok) {
+          showToast('อัปเดตยืนยันส่งของเรียบร้อยแล้ว! 🚀', 'success');
+          loadOrders();
+        }
+      } catch (err) {
+        showToast('เกิดข้อผิดพลาดในการอัปเดตออเดอร์', 'error');
+      }
+    }
+
+    loadCategories();
+    loadBanners();
+    loadOrders();
+    setInterval(loadOrders, 5000);
+  </script>
+</body>
+</html>

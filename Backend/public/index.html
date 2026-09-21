@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backend Online - Rewards Server</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
+    body {
+      background-color: #0b0f19;
+      color: #f3f4f6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 40%);
+    }
+    .card {
+      width: 100%;
+      max-width: 460px;
+      background: rgba(18, 24, 38, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .status-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 1rem;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+    }
+    .dot { width: 8px; height: 8px; background: #34d399; border-radius: 50%; box-shadow: 0 0 10px #34d399; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; color: #fff; }
+    p { color: #9ca3af; font-size: 0.95rem; margin-bottom: 2rem; }
+    .btn-group { display: flex; flex-direction: column; gap: 0.85rem; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+    .btn-primary:hover { background: linear-gradient(135deg, #4f46e5, #4338ca); transform: translateY(-2px); }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #f3f4f6;
+    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="status-dot">
+      <span class="dot"></span>
+      <span>Backend Server Online (Port 5000)</span>
+    </div>
+
+    <h1>⚡ Backend Server พร้อมใช้งาน</h1>
+    <p>ระบบเซิร์ฟเวอร์หลังบ้าน (Node.js + Express + Supabase)</p>
+
+    <div class="btn-group">
+      <a href="/login" class="btn btn-primary">🔑 ไปยังหน้าล็อกอิน Backend (/login)</a>
+      <a href="/api/auth/health" target="_blank" class="btn btn-secondary">🧪 ทดสอบ API Health Check (/api/auth/health)</a>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backend Server - Login System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
+    body {
+      background-color: #0b0f19;
+      color: #f3f4f6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.15) 0%, transparent 40%);
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(18, 24, 38, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2.25rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+    h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.35rem; }
+    p.sub { color: #9ca3af; font-size: 0.875rem; margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.4rem; }
+    input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(11, 15, 25, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: 0.2s;
+    }
+    input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
+    button {
+      width: 100%;
+      padding: 0.85rem;
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 1rem;
+    }
+    button:hover { background: linear-gradient(135deg, #4f46e5, #4338ca); transform: translateY(-1px); }
+    .alert {
+      padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-top: 1rem; display: none; word-break: break-all;
+    }
+    .alert-error { background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #fca5a5; }
+    .alert-success { background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.4); color: #6ee7b7; }
+    .back-link {
+      display: block; text-align: center; margin-top: 1.25rem; color: #9ca3af; text-decoration: none; font-size: 0.85rem;
+    }
+    .back-link:hover { color: #fff; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <span class="badge">Backend Express Server (Port 5000)</span>
+    <h1>เข้าสู่ระบบ Admin (Backend)</h1>
+    <p class="sub">ระบบล็อกอินฝั่ง Backend (เฉพาะบัญชี Admin เท่านั้น)</p>
+
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="username">ชื่อผู้ใช้ใน Roblox (ต้องมี @ นำหน้า)</label>
+        <input type="text" id="username" placeholder="@RobloxUsername" required oninput="formatUsername(this)">
+      </div>
+
+      <div class="form-group">
+        <label for="password">รหัสผ่าน (Password)</label>
+        <input type="password" id="password" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" id="submitBtn">เข้าสู่ระบบ</button>
+    </form>
+
+    <div id="alertBox" class="alert"></div>
+
+    <a href="/" class="back-link">← กลับไปยังหน้าแรก Backend</a>
+  </div>
+
+  <script>
+    function formatUsername(input) {
+      if (input.value && !input.value.startsWith('@')) {
+        input.value = '@' + input.value.replace(/@/g, '');
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const alertBox = document.getElementById('alertBox');
+      const submitBtn = document.getElementById('submitBtn');
+
+      alertBox.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'กำลังเข้าสู่ระบบ...';
+
+      try {
+        const apiUrl = window.location.origin + '/api/auth/login';
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        let data;
+        try {
+          data = await res.json();
+        } catch(e) {
+          data = { message: 'ไม่สามารถอ่านข้อมูลตอบกลับจากเซิร์ฟเวอร์ได้' };
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'เข้าสู่ระบบ';
+
+        if (res.ok && data.success) {
+          alertBox.className = 'alert alert-success';
+          alertBox.style.display = 'block';
+          alertBox.innerHTML = `<strong>เข้าสู่ระบบ Admin สำเร็จ! 🎉</strong><br>กำลังนำท่านเข้าสู่แดชบอร์ด...`;
+
+          localStorage.setItem('adminUser', data.user.username);
+          localStorage.setItem('adminToken', data.token);
+
+          setTimeout(() => {
+            window.location.href = '/admin';
+          }, 1000);
+        } else {
+          alertBox.className = 'alert alert-error';
+          alertBox.style.display = 'block';
+          alertBox.innerHTML = `<strong>เกิดข้อผิดพลาด (${res.status}):</strong> ${data.message || data.error || 'สิทธิ์ไม่ถูกต้องหรือข้อมูลไม่ถูกต้อง'}`;
+        }
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'เข้าสู่ระบบ';
+        alertBox.className = 'alert alert-error';
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = `<strong>ไม่สามารถเชื่อมต่อ Backend ได้:</strong> ${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
