@@ -270,7 +270,7 @@ export const Shop = () => {
               onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
             >
               <ArrowLeft size={18} />
-              <span>ย้อนกลับไปเลือกหมวดหมู่</span>
+              <span>ย้อนกลับ</span>
             </button>
           </div>
 
