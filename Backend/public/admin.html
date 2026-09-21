@@ -134,6 +134,19 @@
     }
     .btn-add:hover { opacity: 0.9; transform: translateY(-1px); }
 
+    .btn-edit {
+      padding: 0.35rem 0.75rem;
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fcd34d;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-edit:hover { background: rgba(245, 158, 11, 0.3); }
+
     .btn-cancel {
       padding: 0.75rem 1.25rem;
       background: rgba(255, 255, 255, 0.1);
@@ -165,16 +178,20 @@
       font-size: 0.75rem;
     }
     .btn-delete {
-      padding: 0.25rem 0.6rem;
-      background: #ef4444;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
+      padding: 0.35rem 0.75rem;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
       cursor: pointer;
-      font-size: 0.75rem;
+      transition: 0.2s;
     }
+    .btn-delete:hover { background: rgba(239, 68, 68, 0.3); }
+
     .banner-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; margin-top: 1rem;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.25rem; margin-top: 1rem;
     }
     .banner-card {
       background: rgba(11, 15, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden; padding: 0.75rem;
@@ -280,14 +297,14 @@
   <!-- Floating Toast Notifications -->
   <div id="toastContainer"></div>
 
-  <!-- MODAL 1: ADD CATEGORY MODAL POPUP -->
+  <!-- MODAL 1: ADD / EDIT CATEGORY MODAL POPUP -->
   <div id="modalCategory" class="modal-overlay">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>📁 เพิ่มหมวดหมู่ / แมพเกมใหม่</h3>
+        <h3 id="modalCategoryHeader">📁 เพิ่มหมวดหมู่ / แมพเกมใหม่</h3>
         <button class="modal-close" onclick="closeModal('modalCategory')">&times;</button>
       </div>
-      <form onsubmit="handleAddCategory(event)">
+      <form onsubmit="handleCategorySubmit(event)">
         <div class="form-group">
           <label>ชื่อหมวดหมู่ / แมพ</label>
           <input type="text" id="catName" placeholder="เช่น 🧊 เติม Robux ถูกกว่าเติมเอง หรือ 🍇 ขายสินค้าแมพ BLOX FRUITS" required>
@@ -304,20 +321,20 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-cancel" onclick="closeModal('modalCategory')">ยกเลิก</button>
-          <button type="submit" class="btn-add">➕ บันทึกหมวดหมู่ใหม่</button>
+          <button type="submit" id="catSubmitBtn" class="btn-add">➕ บันทึกหมวดหมู่</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL 2: ADD ITEM MODAL POPUP -->
+  <!-- MODAL 2: ADD / EDIT ITEM MODAL POPUP -->
   <div id="modalItem" class="modal-overlay">
     <div class="modal-box">
       <div class="modal-header">
         <h3 id="modalItemHeader">📦 เพิ่มสินค้าใหม่ในหมวดหมู่</h3>
         <button class="modal-close" onclick="closeModal('modalItem')">&times;</button>
       </div>
-      <form onsubmit="handleAddItemInCat(event)">
+      <form onsubmit="handleItemSubmit(event)">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
           <div class="form-group">
             <label>ชื่อสินค้า / ไอเท็ม</label>
@@ -348,20 +365,20 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-cancel" onclick="closeModal('modalItem')">ยกเลิก</button>
-          <button type="submit" class="btn-add">➕ บันทึกสินค้าใหม่</button>
+          <button type="submit" id="itemSubmitBtn" class="btn-add">➕ บันทึกสินค้า</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL 3: ADD BANNER MODAL POPUP -->
+  <!-- MODAL 3: ADD / EDIT BANNER MODAL POPUP -->
   <div id="modalBanner" class="modal-overlay">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>🖼️ เพิ่มรูปสไลด์แบนเนอร์หน้าแรก</h3>
+        <h3 id="modalBannerHeader">🖼️ เพิ่มรูปสไลด์แบนเนอร์หน้าแรก</h3>
         <button class="modal-close" onclick="closeModal('modalBanner')">&times;</button>
       </div>
-      <form onsubmit="handleAddBanner(event)">
+      <form onsubmit="handleBannerSubmit(event)">
         <div class="form-group">
           <label>หัวข้อ / ชื่อแบนเนอร์</label>
           <input type="text" id="bannerTitle" placeholder="เช่น กิจกรรมแจก Robux ฟรี">
@@ -374,7 +391,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-cancel" onclick="closeModal('modalBanner')">ยกเลิก</button>
-          <button type="submit" class="btn-add">➕ บันทึกรูปแบนเนอร์</button>
+          <button type="submit" id="bannerSubmitBtn" class="btn-add">➕ บันทึกรูปแบนเนอร์</button>
         </div>
       </form>
     </div>
@@ -399,7 +416,7 @@
       <div class="card">
         <span class="admin-badge">✓ ล็อกอินสำเร็จ (สิทธิ์ Admin)</span>
         <h1 id="welcomeUser">ยินดีต้อนรับสู่แผงควบคุม Admin!</h1>
-        <p>สร้างหมวดหมู่/แมพสินค้า, กดเข้าไปในหมวดหมู่เพื่อลงสินค้าผ่าน Popup Modal, อัปโหลดรูปสไลด์แบนเนอร์ และรับออเดอร์จากผู้เล่นฝั่ง Backend</p>
+        <p>สร้าง, แก้ไข และลบ หมวดหมู่สินค้า/แมพเกม, เพิ่มสินค้าในหมวดหมู่, อัปโหลดรูปสไลด์แบนเนอร์ และจัดการออเดอร์ (ระบบ CRUD ครบถ้วน)</p>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
           <div style="background: rgba(11, 15, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1.25rem;">
@@ -407,12 +424,12 @@
             <div style="font-size: 1.4rem; font-weight: 700; color: #34d399;">Online 🟢</div>
           </div>
           <div style="background: rgba(11, 15, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1.25rem;">
-            <div style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.35rem;">สิทธิ์ของคุณ</div>
-            <div style="font-size: 1.4rem; font-weight: 700; color: #a5b4fc;">ADMIN 👑</div>
+            <div style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.35rem;">ฟังก์ชันจัดการ (CRUD)</div>
+            <div style="font-size: 1.4rem; font-weight: 700; color: #a5b4fc;">เพิ่ม / แก้ไข / ลบ ⚡</div>
           </div>
           <div style="background: rgba(11, 15, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1.25rem;">
-            <div style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.35rem;">รูปแบบเพิ่มข้อมูล</div>
-            <div style="font-size: 1.4rem; font-weight: 700; color: #f472b6;">Popup Modal ⚡</div>
+            <div style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.35rem;">รูปแบบเพิ่ม/แก้ไข</div>
+            <div style="font-size: 1.4rem; font-weight: 700; color: #f472b6;">Popup Modal 📁</div>
           </div>
         </div>
       </div>
@@ -440,7 +457,7 @@
       </div>
     </div>
 
-    <!-- TAB 3: Categories & Item Management (Unified Menu with Popup Modal) -->
+    <!-- TAB 3: Categories & Item Management (Unified Menu with Popup Modal CRUD) -->
     <div id="tab-categories" class="tab-content">
       <!-- VIEW 1: Categories List & Creation Button -->
       <div id="categoryListView">
@@ -448,9 +465,9 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
             <div>
               <h2>📁 ตั้งค่าหมวดหมู่สินค้า / แมพเกม (Categories)</h2>
-              <p style="color: #9ca3af; font-size: 0.88rem;">สร้างหมวดหมู่หรือแมพเกมใหม่ จากนั้นกดปุ่ม "📦 เข้าไปจัดการ / ลงสินค้า" เพื่อลงไอเท็มสินค้าเข้าในหมวดหมู่นั้นๆ</p>
+              <p style="color: #9ca3af; font-size: 0.88rem;">สร้าง, แก้ไข หรือลบหมวดหมู่/แมพเกม จากนั้นกดปุ่ม "📦 เข้าไปจัดการ / ลงสินค้า" เพื่อจัดการไอเท็มสินค้าในหมวดหมู่นั้นๆ</p>
             </div>
-            <button class="btn-add" onclick="openModal('modalCategory')">
+            <button class="btn-add" onclick="openAddCategoryModal()">
               <span>➕ เพิ่มหมวดหมู่ / แมพใหม่</span>
             </button>
           </div>
@@ -469,10 +486,10 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
             <div>
               <h2 id="activeCatTitle" style="color: #fff;">📦 จัดการลงสินค้าในหมวดหมู่</h2>
-              <p style="color: #9ca3af; font-size: 0.85rem;">กดปุ่มเพื่อเพิ่มสินค้าใหม่ผ่าน Popup และจัดการลบสินค้าทั้งหมดในหมวดหมู่นี้</p>
+              <p style="color: #9ca3af; font-size: 0.85rem;">กดปุ่มเพื่อเพิ่มหรือแก้ไขสินค้า และจัดการลบสินค้าทั้งหมดในหมวดหมู่นี้</p>
             </div>
             <div style="display: flex; gap: 0.75rem;">
-              <button class="btn-add" onclick="openModal('modalItem')">
+              <button class="btn-add" onclick="openAddItemModal()">
                 <span>➕ เพิ่มสินค้าในหมวดหมู่นี้</span>
               </button>
               <button onclick="closeCategoryItems()" class="btn-logout" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;">
@@ -508,9 +525,9 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <h2>🖼️ ตั้งค่ารูปสไลด์หน้าเว็บ (Banner Slider Settings)</h2>
-            <p style="color: #9ca3af; font-size: 0.88rem;">จัดการอัปโหลดรูปภาพแบนเนอร์ที่จะสไลด์แสดงผลบนหน้าแรก</p>
+            <p style="color: #9ca3af; font-size: 0.88rem;">จัดการสร้าง, แก้ไข และลบ รูปภาพแบนเนอร์ที่จะสไลด์แสดงผลบนหน้าแรก</p>
           </div>
-          <button class="btn-add" onclick="openModal('modalBanner')">
+          <button class="btn-add" onclick="openAddBannerModal()">
             <span>➕ เพิ่มรูปสไลด์แบนเนอร์ใหม่</span>
           </button>
         </div>
@@ -528,6 +545,13 @@
 
   <script>
     let activeCategory = null; // { id, name }
+    let categoriesList = [];
+    let currentItemsList = [];
+    let bannersList = [];
+
+    let editingCategoryId = null;
+    let editingItemId = null;
+    let editingBannerId = null;
 
     const adminUser = localStorage.getItem('adminUser');
     if (adminUser) {
@@ -543,7 +567,6 @@
       document.getElementById(modalId).classList.remove('active');
     }
 
-    // Close modal when clicking outside modal box
     window.onclick = function(e) {
       if (e.target.classList.contains('modal-overlay')) {
         e.target.classList.remove('active');
@@ -594,20 +617,29 @@
       }
     }
 
+    // -------------------------------------------------------------
+    // CATEGORY FUNCTIONS (LOAD, ADD, EDIT, DELETE)
+    // -------------------------------------------------------------
     async function loadCategories() {
       try {
         const res = await fetch('/api/items/categories');
         const data = await res.json();
         const grid = document.getElementById('categoriesGrid');
+        categoriesList = data.categories || [];
 
-        if (data.categories && data.categories.length > 0) {
-          grid.innerHTML = data.categories.map(c => `
+        if (categoriesList.length > 0) {
+          grid.innerHTML = categoriesList.map(c => `
             <div class="banner-card" style="display:flex; flex-direction:column; padding:0.75rem;">
               <img src="${c.image_url || 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500'}" alt="${c.name}" style="height:110px; object-fit:cover; border-radius:8px;" />
               <div style="font-size:0.95rem; margin: 0.5rem 0 0.2rem 0; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.name}</div>
               <div style="font-size:0.8rem; color:#9ca3af; margin-bottom:0.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.description || 'ไม่มีคำอธิบาย'}</div>
+              
               <button class="btn-add" style="width:100%; margin-bottom:0.5rem; background:linear-gradient(135deg, #10b981, #059669); font-size:0.8rem; padding:0.5rem; justify-content:center;" onclick="openCategoryItems('${c.id}', '${c.name.replace(/'/g, "\\'")}')">📦 เข้าไปจัดการ / ลงสินค้า</button>
-              <button class="btn-delete" style="width:100%; font-size:0.8rem; padding:0.4rem;" onclick="deleteCategory('${c.id}')">🗑️ ลบหมวดหมู่</button>
+              
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem;">
+                <button class="btn-edit" onclick="openEditCategoryModal('${c.id}')">✏️ แก้ไข</button>
+                <button class="btn-delete" onclick="deleteCategory('${c.id}')">🗑️ ลบ</button>
+              </div>
             </div>
           `).join('');
         } else {
@@ -618,12 +650,93 @@
       }
     }
 
+    function openAddCategoryModal() {
+      editingCategoryId = null;
+      document.getElementById('modalCategoryHeader').innerText = '📁 เพิ่มหมวดหมู่ / แมพเกมใหม่';
+      document.getElementById('catSubmitBtn').innerText = '➕ บันทึกหมวดหมู่';
+      document.getElementById('catName').value = '';
+      document.getElementById('catDesc').value = '';
+      document.getElementById('catImage').value = '';
+      document.getElementById('catFile').value = '';
+      document.getElementById('catPreview').style.display = 'none';
+      openModal('modalCategory');
+    }
+
+    function openEditCategoryModal(catId) {
+      const cat = categoriesList.find(c => c.id === catId);
+      if (!cat) return;
+
+      editingCategoryId = catId;
+      document.getElementById('modalCategoryHeader').innerText = `✏️ แก้ไขหมวดหมู่: ${cat.name}`;
+      document.getElementById('catSubmitBtn').innerText = '💾 อัปเดตหมวดหมู่';
+      document.getElementById('catName').value = cat.name || '';
+      document.getElementById('catDesc').value = cat.description || '';
+      document.getElementById('catImage').value = cat.image_url || '';
+      document.getElementById('catFile').value = '';
+
+      if (cat.image_url) {
+        const preview = document.getElementById('catPreview');
+        preview.src = cat.image_url;
+        preview.style.display = 'block';
+      } else {
+        document.getElementById('catPreview').style.display = 'none';
+      }
+
+      openModal('modalCategory');
+    }
+
+    async function handleCategorySubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('catName').value;
+      const description = document.getElementById('catDesc').value;
+      const image_url = document.getElementById('catImage').value;
+
+      const isEdit = !!editingCategoryId;
+      const url = isEdit ? `/api/items/categories/${editingCategoryId}` : '/api/items/categories';
+      const method = isEdit ? 'PATCH' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, description, image_url })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast(isEdit ? 'อัปเดตข้อมูลหมวดหมู่สำเร็จ! 🎉' : 'เพิ่มหมวดหมู่ / แมพสำเร็จ! 🎉', 'success');
+          e.target.reset();
+          document.getElementById('catPreview').style.display = 'none';
+          closeModal('modalCategory');
+          loadCategories();
+        } else {
+          showToast(data.message || 'เกิดข้อผิดพลาด', 'error');
+        }
+      } catch (err) {
+        showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ API', 'error');
+      }
+    }
+
+    async function deleteCategory(id) {
+      if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่นี้?')) return;
+      try {
+        const res = await fetch(`/api/items/categories/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('ลบหมวดหมู่เรียบร้อยแล้ว', 'success');
+          loadCategories();
+        }
+      } catch (err) {
+        showToast('เกิดข้อผิดพลาดในการลบหมวดหมู่', 'error');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // ITEM / PRODUCT FUNCTIONS (LOAD, ADD, EDIT, DELETE)
+    // -------------------------------------------------------------
     function openCategoryItems(catId, catName) {
       activeCategory = { id: catId, name: catName };
       document.getElementById('categoryListView').style.display = 'none';
       document.getElementById('categoryItemDetailView').style.display = 'block';
       document.getElementById('activeCatTitle').innerText = `📦 จัดการลงสินค้าในหมวดหมู่: ${catName}`;
-      document.getElementById('modalItemHeader').innerText = `📦 เพิ่มสินค้าใหม่ใน "${catName}"`;
       loadItemsForActiveCategory();
     }
 
@@ -640,17 +753,18 @@
         const res = await fetch('/api/items');
         const data = await res.json();
         const tbody = document.getElementById('categoryItemsTableBody');
-        const catItems = (data.items || []).filter(i => i.category_id === activeCategory.id || i.category_name === activeCategory.name);
+        currentItemsList = (data.items || []).filter(i => i.category_id === activeCategory.id || i.category_name === activeCategory.name);
 
-        if (catItems.length > 0) {
-          tbody.innerHTML = catItems.map(item => `
+        if (currentItemsList.length > 0) {
+          tbody.innerHTML = currentItemsList.map(item => `
             <tr>
               <td><img src="${item.image_url}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px;" /></td>
               <td><strong>${item.title}</strong></td>
               <td>${item.points} PTS</td>
               <td>${item.stock} ชิ้น</td>
               <td>
-                <button class="btn-delete" onclick="deleteItem('${item.id}')">🗑️ ลบสินค้า</button>
+                <button class="btn-edit" style="margin-right:0.35rem;" onclick="openEditItemModal('${item.id}')">✏️ แก้ไข</button>
+                <button class="btn-delete" onclick="deleteItem('${item.id}')">🗑️ ลบ</button>
               </td>
             </tr>
           `).join('');
@@ -662,46 +776,47 @@
       }
     }
 
-    async function handleAddCategory(e) {
-      e.preventDefault();
-      const name = document.getElementById('catName').value;
-      const description = document.getElementById('catDesc').value;
-      const image_url = document.getElementById('catImage').value;
-
-      try {
-        const res = await fetch('/api/items/categories', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, description, image_url })
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          showToast('เพิ่มหมวดหมู่ / แมพสำเร็จ! 🎉', 'success');
-          e.target.reset();
-          document.getElementById('catPreview').style.display = 'none';
-          closeModal('modalCategory');
-          loadCategories();
-        } else {
-          showToast(data.message || 'เกิดข้อผิดพลาด', 'error');
-        }
-      } catch (err) {
-        showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ API', 'error');
-      }
+    function openAddItemModal() {
+      if (!activeCategory) return;
+      editingItemId = null;
+      document.getElementById('modalItemHeader').innerText = `📦 เพิ่มสินค้าใหม่ใน "${activeCategory.name}"`;
+      document.getElementById('itemSubmitBtn').innerText = '➕ บันทึกสินค้า';
+      document.getElementById('itemTitleInCat').value = '';
+      document.getElementById('itemPointsInCat').value = '';
+      document.getElementById('itemStockInCat').value = '';
+      document.getElementById('itemImageInCat').value = '';
+      document.getElementById('itemFileInCat').value = '';
+      document.getElementById('itemDescInCat').value = '';
+      document.getElementById('itemPreviewInCat').style.display = 'none';
+      openModal('modalItem');
     }
 
-    async function deleteCategory(id) {
-      try {
-        const res = await fetch(`/api/items/categories/${id}`, { method: 'DELETE' });
-        if (res.ok) {
-          showToast('ลบหมวดหมู่เรียบร้อยแล้ว', 'success');
-          loadCategories();
-        }
-      } catch (err) {
-        showToast('เกิดข้อผิดพลาดในการลบหมวดหมู่', 'error');
+    function openEditItemModal(itemId) {
+      const item = currentItemsList.find(i => i.id === itemId);
+      if (!item) return;
+
+      editingItemId = itemId;
+      document.getElementById('modalItemHeader').innerText = `✏️ แก้ไขสินค้า: ${item.title}`;
+      document.getElementById('itemSubmitBtn').innerText = '💾 อัปเดตสินค้า';
+      document.getElementById('itemTitleInCat').value = item.title || '';
+      document.getElementById('itemPointsInCat').value = item.points || '';
+      document.getElementById('itemStockInCat').value = item.stock || '';
+      document.getElementById('itemImageInCat').value = item.image_url || '';
+      document.getElementById('itemFileInCat').value = '';
+      document.getElementById('itemDescInCat').value = item.description || '';
+
+      if (item.image_url) {
+        const preview = document.getElementById('itemPreviewInCat');
+        preview.src = item.image_url;
+        preview.style.display = 'block';
+      } else {
+        document.getElementById('itemPreviewInCat').style.display = 'none';
       }
+
+      openModal('modalItem');
     }
 
-    async function handleAddItemInCat(e) {
+    async function handleItemSubmit(e) {
       e.preventDefault();
       if (!activeCategory) {
         showToast('ไม่พบข้อมูลหมวดหมู่', 'error');
@@ -719,9 +834,13 @@
         return;
       }
 
+      const isEdit = !!editingItemId;
+      const url = isEdit ? `/api/items/${editingItemId}` : '/api/items';
+      const method = isEdit ? 'PATCH' : 'POST';
+
       try {
-        const res = await fetch('/api/items', {
-          method: 'POST',
+        const res = await fetch(url, {
+          method: method,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             title,
@@ -735,7 +854,7 @@
         });
         const data = await res.json();
         if (res.ok && data.success) {
-          showToast('เพิ่มสินค้าเข้าหมวดหมู่สำเร็จ! 🎉', 'success');
+          showToast(isEdit ? 'อัปเดตข้อมูลสินค้าสำเร็จ! 🎉' : 'เพิ่มสินค้าเข้าหมวดหมู่สำเร็จ! 🎉', 'success');
           e.target.reset();
           document.getElementById('itemPreviewInCat').style.display = 'none';
           closeModal('modalItem');
@@ -749,6 +868,7 @@
     }
 
     async function deleteItem(id) {
+      if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบสินค้านี้?')) return;
       try {
         const res = await fetch(`/api/items/${id}`, { method: 'DELETE' });
         if (res.ok) {
@@ -760,18 +880,25 @@
       }
     }
 
+    // -------------------------------------------------------------
+    // BANNER SLIDER FUNCTIONS (LOAD, ADD, EDIT, DELETE)
+    // -------------------------------------------------------------
     async function loadBanners() {
       try {
         const res = await fetch('/api/items/banners');
         const data = await res.json();
         const grid = document.getElementById('bannersGrid');
+        bannersList = data.banners || [];
 
-        if (data.banners && data.banners.length > 0) {
-          grid.innerHTML = data.banners.map(b => `
-            <div class="banner-card">
+        if (bannersList.length > 0) {
+          grid.innerHTML = bannersList.map(b => `
+            <div class="banner-card" style="display:flex; flex-direction:column; padding:0.75rem;">
               <img src="${b.image_url}" alt="${b.title || 'banner'}" />
-              <div style="font-size:0.8rem; margin: 0.35rem 0; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${b.title || 'แบนเนอร์'}</div>
-              <button class="btn-delete" style="width:100%;" onclick="deleteBanner('${b.id}')">🗑️ ลบแบนเนอร์</button>
+              <div style="font-size:0.85rem; margin: 0.4rem 0; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${b.title || 'แบนเนอร์'}</div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem; margin-top:auto;">
+                <button class="btn-edit" onclick="openEditBannerModal('${b.id}')">✏️ แก้ไข</button>
+                <button class="btn-delete" onclick="deleteBanner('${b.id}')">🗑️ ลบ</button>
+              </div>
             </div>
           `).join('');
         } else {
@@ -782,7 +909,40 @@
       }
     }
 
-    async function handleAddBanner(e) {
+    function openAddBannerModal() {
+      editingBannerId = null;
+      document.getElementById('modalBannerHeader').innerText = '🖼️ เพิ่มรูปสไลด์แบนเนอร์หน้าแรก';
+      document.getElementById('bannerSubmitBtn').innerText = '➕ บันทึกรูปแบนเนอร์';
+      document.getElementById('bannerTitle').value = '';
+      document.getElementById('bannerUrl').value = '';
+      document.getElementById('bannerFile').value = '';
+      document.getElementById('bannerPreview').style.display = 'none';
+      openModal('modalBanner');
+    }
+
+    function openEditBannerModal(bannerId) {
+      const banner = bannersList.find(b => b.id === bannerId);
+      if (!banner) return;
+
+      editingBannerId = bannerId;
+      document.getElementById('modalBannerHeader').innerText = '✏️ แก้ไขรูปสไลด์แบนเนอร์';
+      document.getElementById('bannerSubmitBtn').innerText = '💾 อัปเดตแบนเนอร์';
+      document.getElementById('bannerTitle').value = banner.title || '';
+      document.getElementById('bannerUrl').value = banner.image_url || '';
+      document.getElementById('bannerFile').value = '';
+
+      if (banner.image_url) {
+        const preview = document.getElementById('bannerPreview');
+        preview.src = banner.image_url;
+        preview.style.display = 'block';
+      } else {
+        document.getElementById('bannerPreview').style.display = 'none';
+      }
+
+      openModal('modalBanner');
+    }
+
+    async function handleBannerSubmit(e) {
       e.preventDefault();
       const image_url = document.getElementById('bannerUrl').value;
       const title = document.getElementById('bannerTitle').value;
@@ -792,15 +952,19 @@
         return;
       }
 
+      const isEdit = !!editingBannerId;
+      const url = isEdit ? `/api/items/banners/${editingBannerId}` : '/api/items/banners';
+      const method = isEdit ? 'PATCH' : 'POST';
+
       try {
-        const res = await fetch('/api/items/banners', {
-          method: 'POST',
+        const res = await fetch(url, {
+          method: method,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image_url, title })
         });
         const data = await res.json();
         if (res.ok && data.success) {
-          showToast('เพิ่มรูปสไลด์แบนเนอร์สำเร็จ! 🎉', 'success');
+          showToast(isEdit ? 'อัปเดตข้อมูลแบนเนอร์สำเร็จ! 🎉' : 'เพิ่มรูปสไลด์แบนเนอร์สำเร็จ! 🎉', 'success');
           e.target.reset();
           document.getElementById('bannerPreview').style.display = 'none';
           closeModal('modalBanner');
@@ -814,6 +978,7 @@
     }
 
     async function deleteBanner(id) {
+      if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบแบนเนอร์นี้?')) return;
       try {
         const res = await fetch(`/api/items/banners/${id}`, { method: 'DELETE' });
         if (res.ok) {
@@ -825,6 +990,9 @@
       }
     }
 
+    // -------------------------------------------------------------
+    // ORDERS FUNCTIONS
+    // -------------------------------------------------------------
     async function loadOrders() {
       try {
         const res = await fetch('/api/items/orders');
