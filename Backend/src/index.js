@@ -33,7 +33,7 @@ app.use('/api/items', itemRoutes)
 
 // HTML Routes
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'))
+  res.sendFile(path.join(__dirname, '../public/login.html'))
 })
 
 app.get('/login', (req, res) => {
@@ -44,9 +44,9 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin.html'))
 })
 
-// Fallback to Home Landing Page
+// Fallback to Login Page
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'))
+  res.sendFile(path.join(__dirname, '../public/login.html'))
 })
 
 // Error handling middleware
