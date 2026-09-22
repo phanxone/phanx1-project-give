@@ -532,11 +532,11 @@ export const Home = () => {
       ) : (
         /* STANDARD HOME PAGE VIEW (Hero Banner + Latest Items Grid) */
         <>
-          {/* Hero Banner Slider Section */}
+          {/* Hero Banner Slider Section (Aspect Ratio 2048x512) */}
           <div style={{
             position: 'relative',
             width: '100%',
-            height: 380,
+            aspectRatio: '2048 / 512',
             borderRadius: 24,
             overflow: 'hidden',
             marginBottom: '2.5rem',
