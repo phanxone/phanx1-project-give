@@ -4,7 +4,7 @@ import { Gift, ShoppingBag, ShieldCheck, Award, Zap, ChevronLeft, ChevronRight, 
 import { useAuth } from '../context/AuthContext'
 
 export const Home = () => {
-  const { user } = useAuth()
+  const { user, setUserPoints, fetchUserPoints } = useAuth()
   const navigate = useNavigate()
   const [banners, setBanners] = useState([])
   const [items, setItems] = useState([])
@@ -106,6 +106,11 @@ export const Home = () => {
           success: true,
           text: `สั่งซื้อ "${selectedItem.title}" (x${quantity}) สำเร็จแล้ว! คำสั่งซื้อถูกส่งไปยังทีมงานเรียบร้อยแล้ว 🎉`
         })
+        if (data.remainingPoints !== undefined && data.remainingPoints !== null) {
+          setUserPoints(data.remainingPoints)
+        } else if (fetchUserPoints) {
+          fetchUserPoints()
+        }
         fetchItems() // Refresh stock count
         setSelectedItem(null) // Return to home view
       } else {

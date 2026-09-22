@@ -145,14 +145,51 @@ router.post('/orders', async (req, res) => {
   if (!supabase) return res.status(500).json({ success: false, message: 'ไม่ได้ตั้งค่า Supabase' })
 
   const qty = parseInt(quantity || 1, 10)
+  const ptsSpent = parseInt(points_spent, 10)
   const displayTitle = qty > 1 ? `${item_title} (x${qty})` : item_title
 
+  let remainingPoints = null
+
+  // 1. Deduct Points from User Profile
+  if (user_id) {
+    const { data: profile } = await supabase.from('profiles').select('points').eq('id', user_id).single()
+    const currentPoints = profile && profile.points !== undefined ? profile.points : 500
+
+    if (currentPoints < ptsSpent) {
+      return res.status(400).json({
+        success: false,
+        message: `พ้อยต์ไม่เพียงพอในการสั่งซื้อ (ต้องการ ${ptsSpent} PTS คุณมี ${currentPoints} PTS)`
+      })
+    }
+
+    remainingPoints = Math.max(0, currentPoints - ptsSpent)
+
+    if (profile) {
+      await supabase.from('profiles').update({ points: remainingPoints, updated_at: new Date().toISOString() }).eq('id', user_id)
+    } else {
+      await supabase.from('profiles').insert([{ id: user_id, username: username, points: remainingPoints }])
+    }
+  }
+
+  // 2. Deduct Stock from Item
+  if (item_id) {
+    const { data: itemData } = await supabase.from('items').select('stock').eq('id', item_id).single()
+    if (itemData && itemData.stock !== undefined) {
+      if (itemData.stock < qty) {
+        return res.status(400).json({ success: false, message: 'สินค้าชิ้นนี้มีไม่เพียงพอในคลัง' })
+      }
+      const newStock = Math.max(0, itemData.stock - qty)
+      await supabase.from('items').update({ stock: newStock }).eq('id', item_id)
+    }
+  }
+
+  // 3. Create Order Entry
   const orderData = {
     user_id: user_id || null,
     username: username,
     item_id: item_id || null,
     item_title: displayTitle,
-    points_spent: parseInt(points_spent, 10),
+    points_spent: ptsSpent,
     status: 'pending'
   }
 
@@ -161,7 +198,13 @@ router.post('/orders', async (req, res) => {
   const { data, error } = await supabase.from('orders').insert([orderData]).select()
 
   if (error) return res.status(500).json({ success: false, error: error.message })
-  res.status(201).json({ success: true, message: 'ส่งคำสั่งแลกสินค้าเรียบร้อยแล้ว!', order: data[0] })
+
+  res.status(201).json({
+    success: true,
+    message: 'ส่งคำสั่งแลกสินค้าเรียบร้อยแล้ว!',
+    remainingPoints: remainingPoints,
+    order: data[0]
+  })
 })
 
 // PATCH /api/items/orders/:id - Admin Update Order Status

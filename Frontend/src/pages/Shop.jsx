@@ -4,7 +4,7 @@ import { ShoppingBag, Zap, CheckCircle2, AlertCircle, ArrowLeft, ShoppingCart, L
 import { useAuth } from '../context/AuthContext'
 
 export const Shop = () => {
-  const { user } = useAuth()
+  const { user, setUserPoints, fetchUserPoints } = useAuth()
   const [categories, setCategories] = useState([])
   const [items, setItems] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
@@ -91,6 +91,11 @@ export const Shop = () => {
           success: true,
           text: `สั่งซื้อ "${selectedItem.title}" (x${quantity}) สำเร็จแล้ว! คำสั่งซื้อถูกส่งไปยังทีมงานเรียบร้อยแล้ว 🎉`
         })
+        if (data.remainingPoints !== undefined && data.remainingPoints !== null) {
+          setUserPoints(data.remainingPoints)
+        } else if (fetchUserPoints) {
+          fetchUserPoints()
+        }
         fetchData() // Refresh stock count
         setSelectedItem(null) // Return to item list
       } else {

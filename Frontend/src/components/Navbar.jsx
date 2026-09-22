@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext'
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
-  const { user, signOut } = useAuth()
+  const { user, signOut, userPoints } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
   const dropdownRef = useRef(null)
@@ -67,7 +67,7 @@ export const Navbar = () => {
               {/* Points Badge on Navbar */}
               <div className="points-tag" style={{ borderRadius: 9999, padding: '0.35rem 0.85rem' }}>
                 <Zap size={14} />
-                <span>500 PTS</span>
+                <span>{userPoints !== undefined ? userPoints : 500} PTS</span>
               </div>
 
               {/* User Dropdown Pill */}
@@ -93,7 +93,7 @@ export const Navbar = () => {
                       <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>{usernameDisplay}</div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--accent-amber)', display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
                         <Award size={12} />
-                        <span>สะสม 500 พอยท์</span>
+                        <span>สะสม {userPoints !== undefined ? userPoints : 500} พอยท์</span>
                       </div>
                     </div>
 
